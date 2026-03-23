@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ShelfHeat Viewer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#0f0f23;color:#ccc;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;
+}
+
+/* ── Header ────────────────────────────────────── */
+header{
+  padding:.8rem 1.5rem;display:flex;justify-content:space-between;
+  align-items:center;border-bottom:1px solid #2a2a4a;flex-shrink:0;
+}
+header h1{font-size:1.2rem;font-weight:600;color:#e8e8f0}
+.header-right{display:flex;align-items:center;gap:1rem}
+.stats{display:flex;gap:1.4rem;font-size:.82rem;color:#999}
+.st{display:flex;align-items:baseline;gap:.35rem}
+.sv{font-weight:700;font-size:1rem;color:#ddd}
+
+/* ── Upload zone ───────────────────────────────── */
+.upload-zone{
+  flex:1;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  padding:3rem;text-align:center;
+}
+.dropzone{
+  width:min(600px,90vw);padding:3rem 2rem;
+  border:2px dashed #3a3a5a;border-radius:16px;
+  background:#14142a;transition:border-color .2s,background .2s;
+  cursor:pointer;
+}
+.dropzone.over{border-color:#6c6cf0;background:#1a1a40}
+.dropzone h2{font-size:1.3rem;color:#b0b0d0;margin-bottom:.6rem;font-weight:500}
+.dropzone p{color:#666;font-size:.88rem;margin:.3rem 0;line-height:1.5}
+.file-row{
+  display:flex;gap:1rem;justify-content:center;
+  margin-top:1.2rem;flex-wrap:wrap;
+}
+.file-btn{
+  padding:.5rem 1.2rem;border-radius:8px;
+  background:#2a2a4a;border:1px solid #3a3a5a;
+  color:#b0b0d0;font-size:.85rem;cursor:pointer;
+  transition:background .15s;
+}
+.file-btn:hover{background:#3a3a60}
+.file-btn.loaded{background:#1a3a1a;border-color:#2a5a2a;color:#6c6}
+input[type=file]{display:none}
+.status{margin-top:1rem;font-size:.8rem;color:#666}
+
+/* ── Heatmap view ──────────────────────────────── */
+main{
+  flex:1;display:none;justify-content:center;
+  align-items:center;padding:1.5rem;overflow:auto;
+}
+main.active{display:flex}
+.shelf-wrap{
+  position:relative;display:inline-block;
+  max-width:95vw;max-height:82vh;
+}
+.shelf-wrap img{
+  display:block;max-width:95vw;max-height:82vh;
+  border-radius:6px;box-shadow:0 6px 28px rgba(0,0,0,.55);
+}
+.shelf-wrap svg{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  border-radius:6px;
+}
+.gp{
+  cursor:pointer;
+  transition:fill-opacity .15s,stroke-width .15s;
+}
+.gp:hover{fill-opacity:.55;stroke-width:3}
+
+/* ── Tooltip ───────────────────────────────────── */
+.tip{
+  position:fixed;padding:.65rem .9rem;
+  background:#1a1a3af0;border:1px solid #3a3a5a;
+  border-radius:8px;font-size:.82rem;pointer-events:none;
+  opacity:0;transition:opacity .12s;z-index:1000;
+  max-width:300px;box-shadow:0 4px 18px rgba(0,0,0,.45);
+  backdrop-filter:blur(6px);
+}
+.tip.vis{opacity:1}
+.tip h3{font-size:.92rem;margin-bottom:.3rem;color:#f0f0ff}
+.tip .dt{color:#9898b8;font-size:.78rem;line-height:1.45}
+.tip .dt span{color:#bbb}
+
+/* ── Legend ─────────────────────────────────────── */
+.legend{
+  position:fixed;bottom:1.2rem;right:1.2rem;
+  background:#16162ef0;border:1px solid #2e2e50;
+  border-radius:10px;padding:.85rem 1.1rem;font-size:.78rem;
+  backdrop-filter:blur(8px);z-index:900;display:none;
+  box-shadow:0 3px 14px rgba(0,0,0,.35);
+}
+.legend.active{display:block}
+.legend h4{margin-bottom:.5rem;font-size:.82rem;color:#b8b8d0}
+.lg-row{
+  display:flex;align-items:center;gap:.5rem;
+  margin:.25rem 0;white-space:nowrap;
+}
+.lg-sw{width:13px;height:13px;border-radius:3px;flex-shrink:0}
+.lg-n{
+  margin-left:auto;padding-left:.6rem;
+  font-weight:600;color:#8888a8;min-width:1.2em;text-align:right;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ShelfHeat Viewer</h1>
+  <div class="header-right">
+    <nav class="stats" id="stats"></nav>
+    <button class="file-btn" id="resetBtn" style="display:none" onclick="resetView()">Load different files</button>
+  </div>
+</header>
+
+<!-- Upload interface -->
+<div class="upload-zone" id="uploadZone">
+  <div class="dropzone" id="dropzone">
+    <h2>Load ShelfHeat Results</h2>
+    <p>Drag &amp; drop your results JSON and shelf photo here</p>
+    <p style="color:#555">— or use the buttons below —</p>
+    <div class="file-row">
+      <label class="file-btn" id="jsonBtn">
+        Results JSON
+        <input type="file" id="jsonInput" accept=".json">
+      </label>
+      <label class="file-btn" id="photoBtn">
+        Shelf Photo
+        <input type="file" id="photoInput" accept="image/*">
+      </label>
+    </div>
+    <div class="status" id="statusText">No files loaded</div>
+  </div>
+</div>
+
+<!-- Heatmap view (shown after loading) -->
+<main id="heatmapView">
+  <div class="shelf-wrap" id="shelfWrap"></div>
+</main>
+
+<div class="legend" id="legend"></div>
+<div class="tip" id="tip"></div>
+
+<script>
+(function(){
+
+// ── Color palette (matches heatmap.py) ──
+const COLORS = {
+  played_recent:    '#00ff64',
+  played_6_12mo:    '#80ff00',
+  played_1_2yr:     '#ffff00',
+  played_2_3yr:     '#ffa500',
+  played_3plus:     '#ff3232',
+  never_played:     '#800080',
+  not_in_collection:'#6464a0',
+  unidentified:     '#555555',
+};
+const LEGEND_LABELS = [
+  ['played_recent',     'Played < 6 months'],
+  ['played_6_12mo',     'Played 6\u201312 months'],
+  ['played_1_2yr',      'Played 1\u20132 years'],
+  ['played_2_3yr',      'Played 2\u20133 years'],
+  ['played_3plus',      'Played 3+ years'],
+  ['never_played',      'Never played'],
+  ['not_in_collection', 'Not in collection'],
+  ['unidentified',      'Unidentified'],
+];
+
+let resultsData = null;
+let photoDataURL = null;
+
+// ── DOM refs ──
+const dropzone   = document.getElementById('dropzone');
+const uploadZone = document.getElementById('uploadZone');
+const heatmapView= document.getElementById('heatmapView');
+const shelfWrap  = document.getElementById('shelfWrap');
+const statsEl    = document.getElementById('stats');
+const legendEl   = document.getElementById('legend');
+const tipEl      = document.getElementById('tip');
+const statusText = document.getElementById('statusText');
+const jsonBtn    = document.getElementById('jsonBtn');
+const photoBtn   = document.getElementById('photoBtn');
+const resetBtn   = document.getElementById('resetBtn');
+
+// ── File handling ──
+document.getElementById('jsonInput').addEventListener('change', e => {
+  if (e.target.files[0]) handleFile(e.target.files[0]);
+});
+document.getElementById('photoInput').addEventListener('change', e => {
+  if (e.target.files[0]) handleFile(e.target.files[0]);
+});
+
+// Drag & drop
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('over');
+  for (const f of e.dataTransfer.files) handleFile(f);
+});
+
+function handleFile(file) {
+  if (file.name.endsWith('.json')) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        resultsData = JSON.parse(reader.result);
+        jsonBtn.classList.add('loaded');
+        updateStatus();
+        tryRender();
+      } catch (err) {
+        statusText.textContent = 'Error: invalid JSON file';
+      }
+    };
+    reader.readAsText(file);
+  } else if (file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      photoDataURL = reader.result;
+      photoBtn.classList.add('loaded');
+      updateStatus();
+      tryRender();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function updateStatus() {
+  const parts = [];
+  if (resultsData) parts.push('JSON loaded (' + (resultsData.items||[]).length + ' items)');
+  else parts.push('JSON: waiting');
+  if (photoDataURL) parts.push('Photo loaded');
+  else parts.push('Photo: waiting');
+  statusText.textContent = parts.join('  •  ');
+}
+
+function tryRender() {
+  if (!resultsData || !photoDataURL) return;
+  render(resultsData, photoDataURL);
+}
+
+// ── Rendering ──
+function render(data, photoSrc) {
+  uploadZone.style.display = 'none';
+  heatmapView.classList.add('active');
+  legendEl.classList.add('active');
+  resetBtn.style.display = '';
+
+  const [detW, detH] = data.detection_size || [1024, 768];
+  const items = data.items || [];
+
+  // Build stats
+  const s = data.summary || computeSummary(items);
+  statsEl.innerHTML =
+    st(s.total_detected, 'detected') +
+    st(s.identified, 'identified') +
+    st(s.matched, 'matched') +
+    st(s.never_played, 'never played', '#800080');
+
+  // Build legend
+  const byCat = s.by_category || {};
+  let legHtml = '<h4>Legend</h4>';
+  for (const [key, label] of LEGEND_LABELS) {
+    const count = byCat[key] || 0;
+    const color = COLORS[key] || '#555';
+    const op = count > 0 ? '1' : '0.35';
+    legHtml += `<div class="lg-row" style="opacity:${op}">` +
+      `<span class="lg-sw" style="background:${color}"></span>${label}` +
+      `<span class="lg-n">${count}</span></div>`;
+  }
+  legendEl.innerHTML = legHtml;
+
+  // Build shelf image + SVG overlay
+  const img = document.createElement('img');
+  img.src = photoSrc;
+  img.alt = 'Board game shelf';
+
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${detW} ${detH}`);
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+  for (const item of items) {
+    const poly = document.createElementNS(svgNS, 'polygon');
+    const pts = (item.polygon || []).map(p => p.join(',')).join(' ');
+    const color = item.color || COLORS[item.category] || '#555';
+
+    poly.setAttribute('points', pts);
+    poly.setAttribute('fill', color);
+    poly.setAttribute('fill-opacity', '0.30');
+    poly.setAttribute('stroke', color);
+    poly.setAttribute('stroke-width', '2');
+    poly.setAttribute('stroke-opacity', '0.8');
+    poly.setAttribute('class', 'gp');
+    poly.dataset.info = JSON.stringify(buildTipData(item));
+
+    svg.appendChild(poly);
+  }
+
+  shelfWrap.innerHTML = '';
+  shelfWrap.appendChild(img);
+  shelfWrap.appendChild(svg);
+
+  // Bind tooltip events
+  bindTooltips();
+}
+
+function buildTipData(item) {
+  const tip = { label: item.label || '' };
+  const id = item.identification;
+  if (id) {
+    tip.name = id.game_name || '';
+    tip.method = id.method || '';
+  }
+  const m = item.collection_match;
+  if (m) {
+    tip.plays = m.play_count || 0;
+    tip.last_played = m.last_played || 'Never';
+    if (m.user_rating) tip.rating = m.user_rating;
+  }
+  return tip;
+}
+
+function bindTooltips() {
+  document.querySelectorAll('.gp').forEach(p => {
+    p.addEventListener('mouseenter', () => {
+      const d = JSON.parse(p.dataset.info);
+      let h = '';
+      if (d.name) {
+        h += '<h3>' + esc(d.name) + '</h3><div class="dt">';
+        if (d.label) h += esc(d.label) + '<br>';
+        if (d.method) h += 'ID method: <span>' + d.method + '</span><br>';
+        if (d.plays !== undefined) h += 'Plays: <span>' + d.plays + '</span><br>';
+        if (d.last_played) h += 'Last played: <span>' + d.last_played + '</span><br>';
+        if (d.rating) h += 'Your rating: <span>' + d.rating + '/10</span>';
+        h += '</div>';
+      } else {
+        h = '<h3>Unidentified</h3><div class="dt">' + esc(d.label || 'Could not identify') + '</div>';
+      }
+      tipEl.innerHTML = h;
+      tipEl.classList.add('vis');
+    });
+    p.addEventListener('mousemove', e => {
+      let x = e.clientX + 14, y = e.clientY + 14;
+      const r = tipEl.getBoundingClientRect();
+      if (x + r.width > window.innerWidth) x = e.clientX - r.width - 10;
+      if (y + r.height > window.innerHeight) y = e.clientY - r.height - 10;
+      tipEl.style.left = x + 'px';
+      tipEl.style.top = y + 'px';
+    });
+    p.addEventListener('mouseleave', () => tipEl.classList.remove('vis'));
+  });
+}
+
+function computeSummary(items) {
+  const byCat = {};
+  let identified = 0, matched = 0;
+  for (const it of items) {
+    byCat[it.category] = (byCat[it.category] || 0) + 1;
+    if (it.identification) identified++;
+    if (it.collection_match) matched++;
+  }
+  return {
+    total_detected: items.length,
+    identified, matched,
+    never_played: byCat.never_played || 0,
+    not_in_collection: byCat.not_in_collection || 0,
+    unidentified: byCat.unidentified || 0,
+    by_category: byCat,
+  };
+}
+
+function st(n, label, color) {
+  const c = color ? ` style="color:${color}"` : '';
+  return `<div class="st"><span class="sv"${c}>${n}</span> ${label}</div>`;
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ── Reset ──
+window.resetView = function() {
+  resultsData = null;
+  photoDataURL = null;
+  uploadZone.style.display = '';
+  heatmapView.classList.remove('active');
+  legendEl.classList.remove('active');
+  resetBtn.style.display = 'none';
+  statsEl.innerHTML = '';
+  jsonBtn.classList.remove('loaded');
+  photoBtn.classList.remove('loaded');
+  statusText.textContent = 'No files loaded';
+  document.getElementById('jsonInput').value = '';
+  document.getElementById('photoInput').value = '';
+};
+
+})();
+</script>
+</body>
+</html>

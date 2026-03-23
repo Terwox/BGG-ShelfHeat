@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS junk
+.DS_Store
+Thumbs.db
+nul
+
+# R artifacts
+.Rhistory
+.RData
+.Rproj.user/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Secrets
+.env
+.env.*
+secrets.json
+secrets.yml
+
+# Model cache (large)
+*.pt
+*.bin
+*.safetensors
+
+# Output files
+output/
+*.html
+!viewer/index.html
+results*.json
