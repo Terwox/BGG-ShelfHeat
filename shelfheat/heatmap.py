@@ -16,30 +16,81 @@ from pathlib import Path
 from PIL import Image
 
 # ---------------------------------------------------------------------------
-# Color palette (from ARCHITECTURE.md)
+# Color system: continuous log scale, colorblind-accessible
 # ---------------------------------------------------------------------------
+# Gradient: dark blue (just played) → teal → yellow (ancient)
+# Based on cividis palette — safe for protanopia, deuteranopia, AND tritanopia.
+# Special colors use magenta (never played) which is distinct from blue-yellow axis.
 
-COLORS = {
-    "played_recent":    "#00ff64",   # last 6 months — green
-    "played_6_12mo":    "#80ff00",   # 6-12 months — yellow-green
-    "played_1_2yr":     "#ffff00",   # 1-2 years — yellow
-    "played_2_3yr":     "#ffa500",   # 2-3 years — orange
-    "played_3plus":     "#ff3232",   # 3+ years — red
-    "never_played":     "#800080",   # zero plays — purple
-    "not_in_collection": "#6464a0",  # identified, not in BGG — blue-gray
-    "unidentified":     "#555555",   # couldn't identify — gray
-}
+import math
 
-LEGEND_ITEMS = [
-    ("played_recent",     "Played < 6 months"),
-    ("played_6_12mo",     "Played 6–12 months"),
-    ("played_1_2yr",      "Played 1–2 years"),
-    ("played_2_3yr",      "Played 2–3 years"),
-    ("played_3plus",      "Played 3+ years"),
-    ("never_played",      "Never played"),
-    ("not_in_collection", "Not in collection"),
-    ("unidentified",      "Unidentified"),
+# Cividis-inspired control points: (t, R, G, B) where t ∈ [0, 1]
+# 0 = just played today, 1 = very old (years)
+_GRADIENT_STOPS = [
+    (0.00,  0,  32, 77),    # deep navy — just played
+    (0.15,  0,  65, 118),   # ocean blue
+    (0.30,  47, 108, 142),  # steel teal
+    (0.50,  110, 150, 130), # sage
+    (0.70,  178, 180,  80), # olive-gold
+    (0.85,  222, 200,  55), # warm gold
+    (1.00,  253, 231,  37), # bright yellow — ancient
 ]
+
+# Non-gradient special colors
+COLOR_NEVER_PLAYED = "#d946a8"      # magenta/pink — stands out from blue-yellow
+COLOR_NOT_IN_COLLECTION = "#7878b0"  # muted lavender
+COLOR_UNIDENTIFIED = "#555555"       # neutral gray
+
+# Log scale: how many days maps to the "max" end of the gradient
+# log(1) = 0 → t=0, log(MAX_DAYS) → t=1
+MAX_DAYS_LOG = 5 * 365  # 5 years = fully "ancient"
+
+
+def _lerp_color(t: float) -> str:
+    """Interpolate the cividis-style gradient at position t ∈ [0, 1]."""
+    t = max(0.0, min(1.0, t))
+
+    # Find the two surrounding stops
+    for i in range(len(_GRADIENT_STOPS) - 1):
+        t0, r0, g0, b0 = _GRADIENT_STOPS[i]
+        t1, r1, g1, b1 = _GRADIENT_STOPS[i + 1]
+        if t0 <= t <= t1:
+            f = (t - t0) / (t1 - t0) if t1 > t0 else 0
+            r = int(r0 + (r1 - r0) * f)
+            g = int(g0 + (g1 - g0) * f)
+            b = int(b0 + (b1 - b0) * f)
+            return f"#{r:02x}{g:02x}{b:02x}"
+
+    # Fallback: last color
+    _, r, g, b = _GRADIENT_STOPS[-1]
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def days_to_color(days_since: int | None) -> str:
+    """Map days-since-last-played to a hex color on the log scale."""
+    if days_since is None or days_since < 0:
+        return COLOR_NEVER_PLAYED
+    # Log scale: log(1) = 0, log(MAX+1) = 1
+    t = math.log1p(days_since) / math.log1p(MAX_DAYS_LOG)
+    return _lerp_color(t)
+
+
+# Legacy bucket names for summary counting (used in stats/JSON)
+BUCKET_THRESHOLDS = [
+    (180,  "played_recent"),
+    (365,  "played_6_12mo"),
+    (730,  "played_1_2yr"),
+    (1095, "played_2_3yr"),
+]
+
+def _days_to_bucket(days: int | None) -> str:
+    """Map days to a named bucket for summary stats."""
+    if days is None:
+        return "never_played"
+    for threshold, name in BUCKET_THRESHOLDS:
+        if days <= threshold:
+            return name
+    return "played_3plus"
 
 
 # ---------------------------------------------------------------------------
@@ -54,45 +105,54 @@ def classify_item(
     Classify a detected shelf item into a heatmap category.
 
     Returns (category_key, hex_color, human_label).
+    Color is continuous (log-scale gradient) for played games,
+    with standout colors for never-played / not-in-collection / unidentified.
     """
     if identification is None:
-        return "unidentified", COLORS["unidentified"], "Unidentified"
+        return "unidentified", COLOR_UNIDENTIFIED, "Unidentified"
 
     if collection_match is None:
-        return "not_in_collection", COLORS["not_in_collection"], "Not in collection"
+        return "not_in_collection", COLOR_NOT_IN_COLLECTION, "Not in collection"
 
     play_count = collection_match.get("play_count", 0)
     last_played = collection_match.get("last_played")
 
     if play_count == 0 and not last_played:
-        return "never_played", COLORS["never_played"], "Never played"
+        return "never_played", COLOR_NEVER_PLAYED, "Never played"
 
-    # Has plays but no recorded date — treat as old
+    # Has plays but no recorded date — treat as very old
     if not last_played:
-        return "played_3plus", COLORS["played_3plus"], f"{play_count} plays (no date)"
+        color = days_to_color(MAX_DAYS_LOG)  # max end of gradient
+        return "played_3plus", color, f"{play_count} plays (no date)"
 
-    months = _months_since(last_played)
+    days = _days_since(last_played)
+    bucket = _days_to_bucket(days)
+    color = days_to_color(days)
     plays = f" ({play_count} plays)" if play_count else ""
 
-    if months <= 6:
-        return "played_recent", COLORS["played_recent"], f"{months}mo ago{plays}"
-    if months <= 12:
-        return "played_6_12mo", COLORS["played_6_12mo"], f"{months}mo ago{plays}"
-    if months <= 24:
-        return "played_1_2yr", COLORS["played_1_2yr"], f"~{months // 12}yr ago{plays}"
-    if months <= 36:
-        return "played_2_3yr", COLORS["played_2_3yr"], f"~{months // 12}yr ago{plays}"
-    return "played_3plus", COLORS["played_3plus"], f"~{months // 12}yr ago{plays}"
+    # Human-readable label
+    if days == 0:
+        label = f"Today{plays}"
+    elif days == 1:
+        label = f"Yesterday{plays}"
+    elif days < 30:
+        label = f"{days}d ago{plays}"
+    elif days < 365:
+        label = f"{days // 30}mo ago{plays}"
+    else:
+        label = f"{days // 365}yr {(days % 365) // 30}mo ago{plays}"
+
+    return bucket, color, label
 
 
-def _months_since(date_str: str) -> int:
-    """Approximate months between a YYYY-MM-DD string and now."""
+def _days_since(date_str: str) -> int:
+    """Days between a YYYY-MM-DD string and now."""
     try:
         d = datetime.strptime(date_str[:10], "%Y-%m-%d")
     except ValueError:
-        return 999  # unparseable → ancient
-    now = datetime.now()
-    return (now.year - d.year) * 12 + (now.month - d.month)
+        return MAX_DAYS_LOG  # unparseable → ancient
+    delta = datetime.now() - d
+    return max(0, delta.days)
 
 
 # ---------------------------------------------------------------------------
@@ -174,11 +234,44 @@ def _build_polygon_svg(item: dict) -> str:
 
 
 def _build_legend_html(summary: dict) -> str:
-    """Build the legend panel inner HTML."""
-    parts = ['<h4>Legend</h4>']
-    for cat_key, label in LEGEND_ITEMS:
-        count = summary.get("by_category", {}).get(cat_key, 0)
-        color = COLORS[cat_key]
+    """Build the legend panel with continuous gradient bar + special colors."""
+    by_cat = summary.get("by_category", {})
+
+    # Build CSS gradient string from our stops
+    grad_parts = []
+    for t, r, g, b in _GRADIENT_STOPS:
+        grad_parts.append(f"rgb({r},{g},{b}) {t * 100:.0f}%")
+    grad_css = ", ".join(grad_parts)
+
+    # Count played games (any bucket starting with "played_")
+    played_count = sum(v for k, v in by_cat.items() if k.startswith("played_"))
+
+    parts = ['<h4>Play Recency</h4>']
+
+    # Gradient bar with labels
+    parts.append(
+        f'<div class="lg-grad-wrap">'
+        f'<div class="lg-grad" style="background:linear-gradient(to right,{grad_css})"></div>'
+        f'<div class="lg-grad-labels">'
+        f'<span>Today</span><span>1yr</span><span>5yr+</span>'
+        f'</div>'
+        f'</div>'
+    )
+    parts.append(
+        f'<div class="lg-row">'
+        f'<span class="lg-sw" style="background:transparent"></span>'
+        f'Played'
+        f'<span class="lg-n">{played_count}</span>'
+        f'</div>'
+    )
+
+    # Special categories
+    special = [
+        (COLOR_NEVER_PLAYED, "Never played", by_cat.get("never_played", 0)),
+        (COLOR_NOT_IN_COLLECTION, "Not in collection", by_cat.get("not_in_collection", 0)),
+        (COLOR_UNIDENTIFIED, "Unidentified", by_cat.get("unidentified", 0)),
+    ]
+    for color, label, count in special:
         opacity = "1" if count > 0 else "0.35"
         parts.append(
             f'<div class="lg-row" style="opacity:{opacity}">'
@@ -187,6 +280,7 @@ def _build_legend_html(summary: dict) -> str:
             f'<span class="lg-n">{count}</span>'
             f'</div>'
         )
+
     return "\n".join(parts)
 
 
@@ -357,6 +451,14 @@ main{{
 .lg-n{{
   margin-left:auto;padding-left:.6rem;
   font-weight:600;color:#8888a8;min-width:1.2em;text-align:right;
+}}
+.lg-grad-wrap{{margin:.5rem 0 .6rem}}
+.lg-grad{{
+  height:14px;border-radius:4px;width:100%;
+}}
+.lg-grad-labels{{
+  display:flex;justify-content:space-between;
+  font-size:.68rem;color:#7878a0;margin-top:.15rem;
 }}
 .empty-msg{{
   text-align:center;color:#666;font-size:1.1rem;
