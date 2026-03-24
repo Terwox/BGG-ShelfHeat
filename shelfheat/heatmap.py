@@ -18,26 +18,37 @@ from PIL import Image
 # ---------------------------------------------------------------------------
 # Color system: continuous sqrt scale, colorblind-accessible
 # ---------------------------------------------------------------------------
-# Direction: COOL (recent) → WARM (ancient). Blue = good, red = neglected.
+# Two palettes: "classic" (green→red) and "cb" (blue→red, colorblind-safe).
 # sqrt scale with 3-year midpoint: sqrt(days / MAX) where MAX = 4× midpoint.
 # All colors bright enough to read at 30% opacity over photos.
-# Safe for protanopia, deuteranopia, AND tritanopia (hue + luminance shift).
+# Toggle between palettes client-side via button in the HTML.
 
 import math
 
-# Gradient: cool → warm. t=0 just played, t=0.5 = 3yr midpoint, t=1.0 ancient.
+# DEFAULT palette: green → yellow → red (intuitive stoplight)
 _GRADIENT_STOPS = [
-    (0.00,  50, 175, 215),  # #32afd7 — bright cyan (just played)
+    (0.00,  34, 197, 94),   # #22c55e — green (just played)
+    (0.20,  74, 195, 80),   # #4ac350 — lime-green
+    (0.40, 160, 190, 60),   # #a0be3c — yellow-green
+    (0.50, 220, 180, 40),   # #dcb428 — gold (3yr midpoint)
+    (0.65, 240, 140, 50),   # #f08c32 — amber
+    (0.80, 240,  90, 60),   # #f05a3c — red-orange
+    (1.00, 220,  50, 50),   # #dc3232 — red (ancient)
+]
+
+# Colorblind-safe alternate: blue → purple → red
+_CB_GRADIENT_STOPS = [
+    (0.00,  50, 175, 215),  # #32afd7 — bright cyan
     (0.20,  80, 150, 195),  # #5096c3 — steel blue
     (0.35, 115, 125, 175),  # #737daf — periwinkle
     (0.50, 155, 100, 155),  # #9b649b — dusty purple (3yr midpoint)
     (0.65, 185,  95, 140),  # #b95f8c — rose-mauve
     (0.80, 230,  85, 100),  # #e65564 — coral/salmon
-    (1.00, 255, 107,  53),  # #ff6b35 — bright orange (ancient)
+    (1.00, 255, 107,  53),  # #ff6b35 — bright orange
 ]
 
-# Non-gradient special colors
-COLOR_NEVER_PLAYED = "#e839a0"       # hot pink — pops against orange-blue axis
+# Non-gradient special colors (same for both palettes)
+COLOR_NEVER_PLAYED = "#e839a0"       # hot pink
 COLOR_NOT_IN_COLLECTION = "#7878b0"  # muted lavender
 COLOR_UNIDENTIFIED = "#555555"       # neutral gray
 
@@ -207,7 +218,7 @@ def _build_polygon_svg(item: dict) -> str:
     points = " ".join(f"{x},{y}" for x, y in item["polygon"])
 
     # Tooltip data blob
-    tip: dict = {"label": item.get("label", "")}
+    tip: dict = {"label": item.get("label", ""), "cat": item.get("category", "")}
     ident = item.get("identification")
     if ident:
         tip["name"] = ident.get("game_name", "")
@@ -221,6 +232,13 @@ def _build_polygon_svg(item: dict) -> str:
             tip["rating"] = match["user_rating"]
         if match.get("bgg_id"):
             tip["bgg_id"] = match["bgg_id"]
+
+    # Store days_since for client-side palette toggle
+    if match and match.get("last_played"):
+        tip["days"] = _days_since(match["last_played"])
+    elif item.get("category") in ("played_3plus",):
+        tip["days"] = MAX_DAYS  # has plays but no date
+    # else: days not set = special category (never_played, unidentified, etc.)
 
     info_attr = html_mod.escape(json.dumps(tip, ensure_ascii=True))
 
@@ -279,6 +297,14 @@ def _build_legend_html(summary: dict) -> str:
             f'<span class="lg-n">{count}</span>'
             f'</div>'
         )
+
+    # Palette toggle button
+    parts.append(
+        '<div style="margin-top:.6rem;text-align:center">'
+        '<button id="palToggle" style="background:#2a2a4a;color:#999;border:1px solid #3a3a5a;'
+        'border-radius:5px;padding:.3rem .7rem;cursor:pointer;font-size:.72rem">'
+        'Colorblind mode</button></div>'
+    )
 
     return "\n".join(parts)
 
@@ -382,6 +408,7 @@ def generate_heatmap(
         legend_html=legend_html,
         game_list_json=game_list_json,
         items_json=items_json,
+        max_days=MAX_DAYS,
     )
 
     out = Path(output_path)
@@ -722,6 +749,66 @@ main{{
     const d=document.createElement('div');
     d.textContent=s;
     return d.innerHTML;
+  }}
+
+  // --- Palette toggle ---
+  const palettes={{
+    classic:[
+      [0.00,34,197,94],[0.20,74,195,80],[0.40,160,190,60],
+      [0.50,220,180,40],[0.65,240,140,50],[0.80,240,90,60],[1.00,220,50,50]
+    ],
+    cb:[
+      [0.00,50,175,215],[0.20,80,150,195],[0.35,115,125,175],
+      [0.50,155,100,155],[0.65,185,95,140],[0.80,230,85,100],[1.00,255,107,53]
+    ]
+  }};
+  const specialColors={{never_played:'#e839a0',not_in_collection:'#7878b0',unidentified:'#555555'}};
+  const maxDays={max_days};
+  let currentPal='classic';
+
+  function lerpColor(t,stops){{
+    t=Math.max(0,Math.min(1,t));
+    for(let i=0;i<stops.length-1;i++){{
+      const[t0,r0,g0,b0]=stops[i];
+      const[t1,r1,g1,b1]=stops[i+1];
+      if(t>=t0&&t<=t1){{
+        const f=t1>t0?(t-t0)/(t1-t0):0;
+        const r=Math.round(r0+(r1-r0)*f);
+        const g=Math.round(g0+(g1-g0)*f);
+        const b=Math.round(b0+(b1-b0)*f);
+        return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+      }}
+    }}
+    const last=stops[stops.length-1];
+    return '#'+[last[1],last[2],last[3]].map(v=>v.toString(16).padStart(2,'0')).join('');
+  }}
+
+  function recolor(palName){{
+    const stops=palettes[palName];
+    document.querySelectorAll('.gp').forEach(p=>{{
+      const d=JSON.parse(p.dataset.info);
+      let c;
+      if(d.cat&&specialColors[d.cat]) c=specialColors[d.cat];
+      else if(d.days!==undefined) c=lerpColor(Math.sqrt(Math.min(d.days,maxDays)/maxDays),stops);
+      else c=specialColors.unidentified;
+      p.setAttribute('fill',c);
+      p.setAttribute('stroke',c);
+    }});
+    // Update gradient bar
+    const bar=document.querySelector('.lg-grad');
+    if(bar){{
+      const parts=stops.map(s=>'rgb('+s[1]+','+s[2]+','+s[3]+') '+(s[0]*100)+'%');
+      bar.style.background='linear-gradient(to right,'+parts.join(',')+')';
+    }}
+  }}
+
+  const togBtn=document.getElementById('palToggle');
+  if(togBtn){{
+    togBtn.addEventListener('click',()=>{{
+      currentPal=currentPal==='classic'?'cb':'classic';
+      togBtn.textContent=currentPal==='classic'?'Colorblind mode':'Standard mode';
+      recolor(currentPal);
+    }});
   }}
 }})();
 </script>
