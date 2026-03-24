@@ -666,6 +666,11 @@ main{{
     }}).join('');
     editResults.querySelectorAll('.er').forEach(el=>{{
       el.addEventListener('click',()=>{{
+        if(editSelected===el.dataset.name){{
+          // Double-click = save
+          document.getElementById('btnSave').dispatchEvent(new Event('click'));
+          return;
+        }}
         editSelected=el.dataset.name;
         editResults.querySelectorAll('.er').forEach(e=>e.classList.remove('sel'));
         el.classList.add('sel');
