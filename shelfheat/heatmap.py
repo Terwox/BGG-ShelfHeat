@@ -18,23 +18,22 @@ from PIL import Image
 # ---------------------------------------------------------------------------
 # Color system: continuous sqrt scale, colorblind-accessible
 # ---------------------------------------------------------------------------
-# Direction: HOT (recent) → COOL (ancient). "Heat" = activity.
-# Warm orange for recently played, cool blue-cyan for dusty.
+# Direction: COOL (recent) → WARM (ancient). Blue = good, red = neglected.
 # sqrt scale with 3-year midpoint: sqrt(days / MAX) where MAX = 4× midpoint.
 # All colors bright enough to read at 30% opacity over photos.
 # Safe for protanopia, deuteranopia, AND tritanopia (hue + luminance shift).
 
 import math
 
-# Gradient: warm → cool. t=0 just played, t=0.5 = 3yr midpoint, t=1.0 ancient.
+# Gradient: cool → warm. t=0 just played, t=0.5 = 3yr midpoint, t=1.0 ancient.
 _GRADIENT_STOPS = [
-    (0.00, 255, 107,  53),  # #ff6b35 — bright orange (just played)
-    (0.20, 230,  85, 100),  # #e65564 — coral/salmon
-    (0.40, 185,  95, 140),  # #b95f8c — rose-mauve
+    (0.00,  50, 175, 215),  # #32afd7 — bright cyan (just played)
+    (0.20,  80, 150, 195),  # #5096c3 — steel blue
+    (0.35, 115, 125, 175),  # #737daf — periwinkle
     (0.50, 155, 100, 155),  # #9b649b — dusty purple (3yr midpoint)
-    (0.65, 115, 125, 175),  # #737daf — periwinkle
-    (0.80,  80, 150, 195),  # #5096c3 — steel blue
-    (1.00,  50, 175, 215),  # #32afd7 — bright cyan (ancient)
+    (0.65, 185,  95, 140),  # #b95f8c — rose-mauve
+    (0.80, 230,  85, 100),  # #e65564 — coral/salmon
+    (1.00, 255, 107,  53),  # #ff6b35 — bright orange (ancient)
 ]
 
 # Non-gradient special colors
