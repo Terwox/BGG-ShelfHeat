@@ -17,6 +17,7 @@ SAM2_MODEL_ID = "facebook/sam2.1-hiera-base-plus"
 # Overlap suppression config
 MIN_AREA_RATIO = 0.20  # discard if clipped below 20% of original area
 MIN_ABSOLUTE_AREA = 100  # discard tiny polygons (in detection-res pixels²)
+MAX_AREA_MULTIPLIER = 5.0  # discard if > 5× median area (shelf segments, not game boxes)
 
 
 def segment_boxes(
@@ -160,6 +161,36 @@ def suppress_overlaps(segments: list[dict]) -> list[dict]:
     # Sort by confidence (highest first — they get priority)
     ordered = sorted(segments, key=lambda s: s["confidence"], reverse=True)
 
+    # --- Phase 1: Area outlier filter ---
+    # Compute polygon areas and reject anything > MAX_AREA_MULTIPLIER × median
+    areas = []
+    for seg in ordered:
+        pts = seg["polygon"]
+        try:
+            poly = Polygon(pts)
+            if not poly.is_valid:
+                poly = make_valid(poly)
+            areas.append(poly.area)
+        except Exception:
+            areas.append(0)
+
+    positive_areas = [a for a in areas if a > 0]
+    if positive_areas:
+        import statistics
+        median_area = statistics.median(positive_areas)
+        max_area = median_area * MAX_AREA_MULTIPLIER
+        area_rejected = 0
+        filtered = []
+        for seg, area in zip(ordered, areas):
+            if area > max_area:
+                area_rejected += 1
+            else:
+                filtered.append(seg)
+        if area_rejected:
+            print(f"[segment] Area filter: removed {area_rejected} oversized polygons (>{MAX_AREA_MULTIPLIER}× median)")
+        ordered = filtered
+
+    # --- Phase 2: Overlap clipping ---
     claimed = []       # Shapely polygons that have claimed space
     surviving = []     # segments that survive suppression
 
