@@ -2,7 +2,7 @@
 
 Take a photo of your board game shelf. Get an interactive heatmap showing what you haven't played.
 
-Green means "played recently." Red means "it's been a while." Purple means *shelf of shame*.
+Green means "played recently." Red means "it's been a while." Purple means *shame*.
 
 <!-- TODO: screenshot placeholder — replace with actual screenshot -->
 <!-- ![ShelfHeat example](docs/screenshot.png) -->
