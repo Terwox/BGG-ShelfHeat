@@ -16,41 +16,42 @@ from pathlib import Path
 from PIL import Image
 
 # ---------------------------------------------------------------------------
-# Color system: continuous log scale, colorblind-accessible
+# Color system: continuous sqrt scale, colorblind-accessible
 # ---------------------------------------------------------------------------
-# Gradient: dark blue (just played) → teal → yellow (ancient)
-# Based on cividis palette — safe for protanopia, deuteranopia, AND tritanopia.
-# Special colors use magenta (never played) which is distinct from blue-yellow axis.
+# Direction: HOT (recent) → COOL (ancient). "Heat" = activity.
+# Warm orange for recently played, cool blue-cyan for dusty.
+# sqrt scale with 3-year midpoint: sqrt(days / MAX) where MAX = 4× midpoint.
+# All colors bright enough to read at 30% opacity over photos.
+# Safe for protanopia, deuteranopia, AND tritanopia (hue + luminance shift).
 
 import math
 
-# Cividis-inspired control points: (t, R, G, B) where t ∈ [0, 1]
-# 0 = just played today, 1 = very old (years)
+# Gradient: warm → cool. t=0 just played, t=0.5 = 3yr midpoint, t=1.0 ancient.
 _GRADIENT_STOPS = [
-    (0.00,  0,  32, 77),    # deep navy — just played
-    (0.15,  0,  65, 118),   # ocean blue
-    (0.30,  47, 108, 142),  # steel teal
-    (0.50,  110, 150, 130), # sage
-    (0.70,  178, 180,  80), # olive-gold
-    (0.85,  222, 200,  55), # warm gold
-    (1.00,  253, 231,  37), # bright yellow — ancient
+    (0.00, 255, 107,  53),  # #ff6b35 — bright orange (just played)
+    (0.20, 230,  85, 100),  # #e65564 — coral/salmon
+    (0.40, 185,  95, 140),  # #b95f8c — rose-mauve
+    (0.50, 155, 100, 155),  # #9b649b — dusty purple (3yr midpoint)
+    (0.65, 115, 125, 175),  # #737daf — periwinkle
+    (0.80,  80, 150, 195),  # #5096c3 — steel blue
+    (1.00,  50, 175, 215),  # #32afd7 — bright cyan (ancient)
 ]
 
 # Non-gradient special colors
-COLOR_NEVER_PLAYED = "#d946a8"      # magenta/pink — stands out from blue-yellow
+COLOR_NEVER_PLAYED = "#e839a0"       # hot pink — pops against orange-blue axis
 COLOR_NOT_IN_COLLECTION = "#7878b0"  # muted lavender
 COLOR_UNIDENTIFIED = "#555555"       # neutral gray
 
-# Log scale: how many days maps to the "max" end of the gradient
-# log(1) = 0 → t=0, log(MAX_DAYS) → t=1
-MAX_DAYS_LOG = 5 * 365  # 5 years = fully "ancient"
+# Scale config: sqrt(days / MAX_DAYS) where MAX = 4× midpoint.
+# This places midpoint_days at exactly t = 0.5 on the gradient.
+MIDPOINT_DAYS = 3 * 365   # 3 years = gradient midpoint
+MAX_DAYS = 4 * MIDPOINT_DAYS  # 12 years = fully "ancient" (cyan)
 
 
 def _lerp_color(t: float) -> str:
-    """Interpolate the cividis-style gradient at position t ∈ [0, 1]."""
+    """Interpolate the gradient at position t ∈ [0, 1]."""
     t = max(0.0, min(1.0, t))
 
-    # Find the two surrounding stops
     for i in range(len(_GRADIENT_STOPS) - 1):
         t0, r0, g0, b0 = _GRADIENT_STOPS[i]
         t1, r1, g1, b1 = _GRADIENT_STOPS[i + 1]
@@ -61,21 +62,20 @@ def _lerp_color(t: float) -> str:
             b = int(b0 + (b1 - b0) * f)
             return f"#{r:02x}{g:02x}{b:02x}"
 
-    # Fallback: last color
     _, r, g, b = _GRADIENT_STOPS[-1]
     return f"#{r:02x}{g:02x}{b:02x}"
 
 
 def days_to_color(days_since: int | None) -> str:
-    """Map days-since-last-played to a hex color on the log scale."""
+    """Map days-since-last-played to a hex color. sqrt scale, 3yr midpoint."""
     if days_since is None or days_since < 0:
         return COLOR_NEVER_PLAYED
-    # Log scale: log(1) = 0, log(MAX+1) = 1
-    t = math.log1p(days_since) / math.log1p(MAX_DAYS_LOG)
+    # sqrt scale: 0→0, MIDPOINT_DAYS→0.5, MAX_DAYS→1.0
+    t = math.sqrt(min(days_since, MAX_DAYS) / MAX_DAYS)
     return _lerp_color(t)
 
 
-# Legacy bucket names for summary counting (used in stats/JSON)
+# Bucket names for summary counting (used in stats/JSON export)
 BUCKET_THRESHOLDS = [
     (180,  "played_recent"),
     (365,  "played_6_12mo"),
@@ -122,7 +122,7 @@ def classify_item(
 
     # Has plays but no recorded date — treat as very old
     if not last_played:
-        color = days_to_color(MAX_DAYS_LOG)  # max end of gradient
+        color = days_to_color(MAX_DAYS)  # max end of gradient
         return "played_3plus", color, f"{play_count} plays (no date)"
 
     days = _days_since(last_played)
@@ -253,7 +253,7 @@ def _build_legend_html(summary: dict) -> str:
         f'<div class="lg-grad-wrap">'
         f'<div class="lg-grad" style="background:linear-gradient(to right,{grad_css})"></div>'
         f'<div class="lg-grad-labels">'
-        f'<span>Today</span><span>1yr</span><span>5yr+</span>'
+        f'<span>Today</span><span>3yr</span><span>12yr+</span>'
         f'</div>'
         f'</div>'
     )

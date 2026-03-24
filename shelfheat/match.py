@@ -129,11 +129,14 @@ class BGGCollection:
 
     def _inherit_plays_from_family(self, bgg_id: int) -> dict | None:
         """
-        Check BGG family/version links for related games with play data.
+        Check BGG implementation/compilation links for related games with play data.
 
-        Fetches the game's BGG "thing" data, finds related game IDs
-        (implementations, compilations, families), and checks if any
-        of those are in our collection with play data.
+        NOTE: BGG API now requires app registration (XMLcalypse). This method
+        will silently return None until auth is configured. Left as a hook for
+        when BGG app IDs become available.
+
+        Only checks boardgameimplementation and boardgamecompilation links —
+        NOT boardgamefamily (too broad, e.g. Agricola ≠ Agricola: ACBS).
         """
         if not hasattr(self, "_family_cache"):
             self._family_cache = {}
@@ -162,6 +165,7 @@ class BGGCollection:
                         "from_id": rid,
                     }
                     self._family_cache[bgg_id] = result
+                    print(f"    ↳ Inherited plays from: {related_game['name']} (id={rid})")
                     return result
 
         self._family_cache[bgg_id] = None
