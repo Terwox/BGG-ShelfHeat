@@ -305,19 +305,21 @@ def generate_heatmap(
     output_path: str,
     bgg_user: str | None = None,
     collection_names: list[str] | None = None,
+    collection_games: list[dict] | None = None,
 ) -> str:
     """
     Generate a self-contained HTML heatmap file.
 
     Args:
-        photo_path:       Path to the original shelf photo.
-        items:            Classified items — each needs polygon, identification,
-                          collection_match, category, color, label.
-        detection_size:   (width, height) of the detection-res image.
-        output_path:      Where to write the .html file.
-        bgg_user:         Optional BGG username for the page title.
-        collection_names: Full list of game names from the user's BGG collection.
-                          Used in the edit UI search dropdown.
+        photo_path:        Path to the original shelf photo.
+        items:             Classified items — each needs polygon, identification,
+                           collection_match, category, color, label.
+        detection_size:    (width, height) of the detection-res image.
+        output_path:       Where to write the .html file.
+        bgg_user:          Optional BGG username for the page title.
+        collection_names:  (DEPRECATED) Simple list of game name strings.
+        collection_games:  Full list of game dicts with name, plays, last_played.
+                           Used in the edit UI for search + play data lookup.
 
     Returns the output file path.
     """
@@ -330,9 +332,22 @@ def generate_heatmap(
     legend_html = _build_legend_html(summary)
     title_suffix = f" &mdash; {html_mod.escape(bgg_user)}" if bgg_user else ""
 
-    # Build game list for the edit UI — prefer full collection, fall back to detected
-    if collection_names:
-        all_game_names = sorted(set(collection_names))
+    # Build game data for the edit UI — rich objects with play info
+    if collection_games:
+        # Full collection with play data: [{name, plays, last_played}, ...]
+        seen = set()
+        deduped = []
+        for g in sorted(collection_games, key=lambda x: x.get("name", "")):
+            if g["name"] not in seen:
+                seen.add(g["name"])
+                deduped.append(g)
+        game_list_json = json.dumps(deduped, ensure_ascii=True)
+    elif collection_names:
+        # Legacy: just names, wrap as objects
+        game_list_json = json.dumps(
+            [{"name": n, "plays": 0, "last_played": ""} for n in sorted(set(collection_names))],
+            ensure_ascii=True,
+        )
     else:
         names = set()
         for it in items:
@@ -342,8 +357,10 @@ def generate_heatmap(
             ident = it.get("identification")
             if ident and ident.get("game_name"):
                 names.add(ident["game_name"])
-        all_game_names = sorted(names)
-    game_list_json = json.dumps(all_game_names, ensure_ascii=True)
+        game_list_json = json.dumps(
+            [{"name": n, "plays": 0, "last_played": ""} for n in sorted(names)],
+            ensure_ascii=True,
+        )
 
     # Build items JSON for the edit UI (so edits can write back)
     items_json = json.dumps(
@@ -547,7 +564,9 @@ main{{
   const editSearch=document.getElementById('editSearch');
   const editResults=document.getElementById('editResults');
   const editTitle=document.getElementById('editTitle');
-  const gameList={game_list_json};
+  const gameList={game_list_json};  // array of game objects
+  const gameLookup={{}};  // name -> game data
+  gameList.forEach(function(g){{gameLookup[g.name]=Object.assign({{}},{{plays:g.plays||0,last_played:g.last_played||''}});}});
   const itemsData={items_json};
   let editTarget=null;  // the polygon element being edited
   let editSelected=null;  // selected game name
@@ -605,10 +624,11 @@ main{{
 
   function renderResults(q){{
     const lq=q.toLowerCase();
-    const matches=lq?gameList.filter(n=>n.toLowerCase().includes(lq)).slice(0,20):gameList.slice(0,20);
-    editResults.innerHTML=matches.map(n=>
-      '<div class="er'+(n===editSelected?' sel':'')+'" data-name="'+esc(n)+'">'+esc(n)+'</div>'
-    ).join('');
+    const matches=lq?gameList.filter(g=>g.name.toLowerCase().includes(lq)).slice(0,20):gameList.slice(0,20);
+    editResults.innerHTML=matches.map(g=>{{
+      const extra=g.last_played?' ('+g.last_played.slice(0,10)+')':g.plays>0?' ('+g.plays+' plays)':'';
+      return '<div class="er'+(g.name===editSelected?' sel':'')+'" data-name="'+esc(g.name)+'">'+esc(g.name)+'<span style="color:#888;font-size:.75rem">'+esc(extra)+'</span></div>';
+    }}).join('');
     editResults.querySelectorAll('.er').forEach(el=>{{
       el.addEventListener('click',()=>{{
         editSelected=el.dataset.name;
@@ -618,13 +638,19 @@ main{{
     }});
   }}
 
-  // Save edit
+  // Save edit — also pulls in play data from collection
   document.getElementById('btnSave').addEventListener('click',()=>{{
     if(!editTarget||!editSelected) return;
     const d=JSON.parse(editTarget.dataset.info);
     d.name=editSelected;
     d.label='Manually identified';
     d.method='manual';
+    // Pull in play data from collection lookup
+    const gd=gameLookup[editSelected];
+    if(gd){{
+      d.plays=gd.plays||0;
+      d.last_played=gd.last_played||'Never';
+    }}
     editTarget.dataset.info=JSON.stringify(d);
     // Update edits log
     logEdit(editTarget, editSelected, 'identify');
