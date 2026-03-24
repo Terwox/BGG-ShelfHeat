@@ -752,6 +752,38 @@ main{{
     console.log('[ShelfHeat] Edit saved:', edits[edits.length-1]);
   }}
 
+  // --- Palette definitions (must be before applyEdits) ---
+  const palettes={{
+    classic:[
+      [0.00,34,197,94],[0.20,74,195,80],[0.40,160,190,60],
+      [0.50,220,180,40],[0.65,240,140,50],[0.80,240,90,60],[1.00,220,50,50]
+    ],
+    cb:[
+      [0.00,50,175,215],[0.20,80,150,195],[0.35,115,125,175],
+      [0.50,155,100,155],[0.65,185,95,140],[0.80,230,85,100],[1.00,255,107,53]
+    ]
+  }};
+  const specialColors={{never_played:'#e839a0',not_in_collection:'#7878b0',unidentified:'#555555'}};
+  const maxDays={max_days};
+  let currentPal='classic';
+
+  function lerpColor(t,stops){{
+    t=Math.max(0,Math.min(1,t));
+    for(let i=0;i<stops.length-1;i++){{
+      const[t0,r0,g0,b0]=stops[i];
+      const[t1,r1,g1,b1]=stops[i+1];
+      if(t>=t0&&t<=t1){{
+        const f=t1>t0?(t-t0)/(t1-t0):0;
+        const r=Math.round(r0+(r1-r0)*f);
+        const g=Math.round(g0+(g1-g0)*f);
+        const b=Math.round(b0+(b1-b0)*f);
+        return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+      }}
+    }}
+    const last=stops[stops.length-1];
+    return '#'+[last[1],last[2],last[3]].map(v=>v.toString(16).padStart(2,'0')).join('');
+  }}
+
   // Load edits from localStorage on page load
   // Restore from localStorage first
   const savedKey='shelfheat_edits_'+window.location.pathname;
@@ -865,37 +897,6 @@ main{{
   }}
 
   // --- Palette toggle ---
-  const palettes={{
-    classic:[
-      [0.00,34,197,94],[0.20,74,195,80],[0.40,160,190,60],
-      [0.50,220,180,40],[0.65,240,140,50],[0.80,240,90,60],[1.00,220,50,50]
-    ],
-    cb:[
-      [0.00,50,175,215],[0.20,80,150,195],[0.35,115,125,175],
-      [0.50,155,100,155],[0.65,185,95,140],[0.80,230,85,100],[1.00,255,107,53]
-    ]
-  }};
-  const specialColors={{never_played:'#e839a0',not_in_collection:'#7878b0',unidentified:'#555555'}};
-  const maxDays={max_days};
-  let currentPal='classic';
-
-  function lerpColor(t,stops){{
-    t=Math.max(0,Math.min(1,t));
-    for(let i=0;i<stops.length-1;i++){{
-      const[t0,r0,g0,b0]=stops[i];
-      const[t1,r1,g1,b1]=stops[i+1];
-      if(t>=t0&&t<=t1){{
-        const f=t1>t0?(t-t0)/(t1-t0):0;
-        const r=Math.round(r0+(r1-r0)*f);
-        const g=Math.round(g0+(g1-g0)*f);
-        const b=Math.round(b0+(b1-b0)*f);
-        return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
-      }}
-    }}
-    const last=stops[stops.length-1];
-    return '#'+[last[1],last[2],last[3]].map(v=>v.toString(16).padStart(2,'0')).join('');
-  }}
-
   function recolor(palName){{
     const stops=palettes[palName];
     document.querySelectorAll('.gp').forEach(p=>{{
