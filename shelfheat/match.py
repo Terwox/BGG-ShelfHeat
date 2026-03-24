@@ -69,6 +69,14 @@ class BGGCollection:
     def game_names(self) -> list[str]:
         return [g["name"] for g in self.games]
 
+    def image_urls(self) -> dict[str, str]:
+        """Return {game_name: thumbnail_url} for games with image URLs."""
+        return {
+            g["name"]: g["image"]
+            for g in self.games
+            if g.get("image")
+        }
+
     def match(self, query: str, inherit_plays: bool = True) -> dict | None:
         """
         Match a query string against collection game names.

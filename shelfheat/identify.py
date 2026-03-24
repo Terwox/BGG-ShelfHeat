@@ -76,18 +76,24 @@ def polygon_crop(
 class GameIdentifier:
     """Identifies board games from polygon crops using tiered methods."""
 
-    def __init__(self, game_names: list[str]):
+    def __init__(self, game_names: list[str], game_images: dict[str, "Path"] | None = None):
         """
         Args:
             game_names: List of game names from the user's BGG collection.
                         Used to constrain identification results.
+            game_images: Optional {game_name: local_image_path} for CLIP
+                         image-to-image matching. When provided, enables
+                         Tier B (CLIP image-image) before Tier C (CLIP text).
         """
         self.game_names = game_names
+        self.game_images = game_images or {}
         self._ocr_reader = None
         self._clip_model = None
         self._clip_preprocess = None
         self._clip_tokenizer = None
         self._clip_text_features = None
+        self._clip_image_features = None
+        self._clip_image_names = None  # parallel list of game names for image features
 
     def identify(self, crop: np.ndarray) -> dict | None:
         """
@@ -105,7 +111,13 @@ class GameIdentifier:
         if result and result["confidence"] >= 0.60:
             return result
 
-        # Tier B: CLIP visual matching
+        # Tier B: CLIP image-to-image matching (if box art images are cached)
+        if self.game_images:
+            result = self._try_clip_image(crop)
+            if result and result["confidence"] >= 0.45:
+                return result
+
+        # Tier C: CLIP text-to-image matching
         result = self._try_clip(crop)
         if result and result["confidence"] >= 0.35:
             return result
@@ -260,7 +272,120 @@ class GameIdentifier:
             text_features = text_features / text_features.norm(dim=-1, keepdim=True)
 
         self._clip_text_features = text_features
-        print(f"[identify] CLIP ready — {len(self.game_names)} game embeddings cached")
+        print(f"[identify] CLIP ready — {len(self.game_names)} text embeddings cached")
+
+        # Also pre-compute image embeddings if box art images are available
+        if self.game_images:
+            self._init_clip_images()
+
+    def _init_clip_images(self):
+        """Pre-compute CLIP image embeddings for cached box art images."""
+        import torch
+        from pathlib import Path
+
+        device = next(self._clip_model.parameters()).device
+        names = []
+        tensors = []
+
+        for name, img_path in self.game_images.items():
+            try:
+                pil_img = Image.open(img_path).convert("RGB")
+                tensor = self._clip_preprocess(pil_img).unsqueeze(0)
+                tensors.append(tensor)
+                names.append(name)
+            except Exception:
+                continue
+
+        if not tensors:
+            print("[identify] No valid box art images for CLIP image matching")
+            return
+
+        batch = torch.cat(tensors, dim=0).to(device)
+
+        # Encode in batches to avoid OOM on large collections
+        all_features = []
+        batch_size = 64
+        with torch.no_grad():
+            for i in range(0, len(batch), batch_size):
+                chunk = batch[i : i + batch_size]
+                features = self._clip_model.encode_image(chunk)
+                features = features / features.norm(dim=-1, keepdim=True)
+                all_features.append(features)
+
+        self._clip_image_features = torch.cat(all_features, dim=0)
+        self._clip_image_names = names
+        print(f"[identify] CLIP image embeddings cached for {len(names)} box art images")
+
+    # -------------------------------------------------------------------
+    # Tier B: CLIP image-to-image matching
+    # -------------------------------------------------------------------
+
+    def _try_clip_image(self, crop: np.ndarray) -> dict | None:
+        """Match crop against cached box art images using CLIP image embeddings."""
+        import torch
+
+        if self._clip_model is None:
+            self._init_clip()
+
+        if self._clip_image_features is None or len(self._clip_image_features) == 0:
+            return None
+
+        # Encode the crop
+        pil_crop = Image.fromarray(cv2.cvtColor(crop, cv2.COLOR_BGR2RGB))
+        image_input = self._clip_preprocess(pil_crop).unsqueeze(0)
+
+        device = next(self._clip_model.parameters()).device
+        image_input = image_input.to(device)
+
+        with torch.no_grad():
+            image_features = self._clip_model.encode_image(image_input)
+            image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+
+        # Cosine similarity against box art image embeddings
+        similarities = (image_features @ self._clip_image_features.T).squeeze(0)
+        scores = similarities.cpu().numpy()
+
+        top_k = min(5, len(scores))
+        top_indices = np.argsort(scores)[::-1][:top_k]
+
+        best_idx = top_indices[0]
+        best_score = float(scores[best_idx])
+
+        candidates = [
+            {"name": self._clip_image_names[idx], "score": round(float(scores[idx]), 4)}
+            for idx in top_indices
+        ]
+
+        # Z-score check: the top match must be a statistical outlier relative
+        # to the full distribution of scores for this crop. This prevents
+        # visually dominant reference images from matching everything.
+        mean_score = float(scores.mean())
+        std_score = float(scores.std())
+        if std_score > 0:
+            z_score = (best_score - mean_score) / std_score
+        else:
+            z_score = 0.0
+
+        # Require z-score >= 3.0 (top match is 3+ std devs above mean)
+        # AND absolute threshold >= 0.45
+        # AND margin >= 0.06 between top-1 and top-2
+        if z_score < 3.0:
+            return None
+
+        if len(top_indices) >= 2:
+            second_score = float(scores[top_indices[1]])
+            margin = best_score - second_score
+            if margin < 0.06:
+                return None  # ambiguous — let Tier C try
+
+        if best_score >= 0.45:
+            return {
+                "method": "clip_image",
+                "game_name": self._clip_image_names[best_idx],
+                "confidence": round(best_score, 4),
+                "detail": {"candidates": candidates, "z_score": round(z_score, 2)},
+            }
+        return None
 
 
 # ---------------------------------------------------------------------------

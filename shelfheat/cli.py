@@ -25,6 +25,7 @@ from shelfheat import __version__
 from shelfheat.detect import detect_boxes
 from shelfheat.heatmap import classify_item, compute_summary, generate_heatmap
 from shelfheat.identify import GameIdentifier, polygon_crop
+from shelfheat.image_cache import ensure_collection_images, enrich_from_bggdb
 from shelfheat.match import BGGCollection
 from shelfheat.segment import segment_boxes
 
@@ -41,6 +42,16 @@ def main():
     print(f"Collection: {len(game_names)} games")
     print(f"{'='*60}\n")
 
+    # ── Download/cache box art images for CLIP image matching ─────
+    game_images = {}
+    if not getattr(args, "no_images", False):
+        enrich_from_bggdb(collection.games)
+        game_images = ensure_collection_images(collection.games)
+    else:
+        print("[pipeline] Skipping box art image download (--no-images)")
+
+    use_tiling = not getattr(args, "no_tiling", False)
+
     # ── Process each photo ──────────────────────────────────────────
     for photo_path in args.photos:
         photo = Path(photo_path)
@@ -53,7 +64,7 @@ def main():
         print(f"{'─'*60}")
         t0 = time.time()
 
-        results = _run_pipeline(str(photo), collection, game_names)
+        results = _run_pipeline(str(photo), collection, game_names, game_images, use_tiling)
         elapsed = time.time() - t0
 
         # Write heatmap HTML
@@ -110,6 +121,8 @@ def _run_pipeline(
     photo_path: str,
     collection: BGGCollection,
     game_names: list[str],
+    game_images: dict[str, "Path"] | None = None,
+    tiling: bool = True,
 ) -> dict:
     """
     Run the full detection → identification → matching pipeline on one photo.
@@ -117,7 +130,7 @@ def _run_pipeline(
     Returns a dict with items (classified), sizes, scale_factor, and summary.
     """
     # Stage 1: Detect bounding boxes
-    det = detect_boxes(photo_path)
+    det = detect_boxes(photo_path, tiling=tiling)
     detections = det["detections"]
     scale_factor = det["scale_factor"]
     detection_size = det["detection_size"]
@@ -137,7 +150,7 @@ def _run_pipeline(
     segments = segment_boxes(photo_path, detections, scale_factor, detection_size)
 
     # Stage 3+4: Crop and identify each polygon
-    identifier = GameIdentifier(game_names)
+    identifier = GameIdentifier(game_names, game_images=game_images)
     items = []
 
     print(f"[identify] Processing {len(segments)} crops...")
@@ -193,9 +206,12 @@ def _dedup_same_game(items: list[dict]) -> list[dict]:
     """
     Remove duplicate polygons for the same game.
 
-    If two+ polygons are identified as the same game AND they overlap,
-    keep only the smallest (tightest bounding polygon). One physical box
-    can't occupy two places on the shelf.
+    Two strategies:
+    1. If 3+ polygons identify as the same game, it's almost certainly
+       false positives from a visually dominant reference image — keep only
+       the single highest-confidence match.
+    2. If exactly 2 polygons identify as the same game AND they overlap,
+       keep only the smallest (tightest bounding polygon).
     """
     from shapely.geometry import Polygon
 
@@ -213,6 +229,18 @@ def _dedup_same_game(items: list[dict]) -> list[dict]:
         if len(indices) < 2:
             continue
 
+        if len(indices) >= 3:
+            # Strategy 1: Too many matches — keep only highest confidence
+            best_idx = max(
+                indices,
+                key=lambda i: items[i].get("identification", {}).get("confidence", 0),
+            )
+            for idx in indices:
+                if idx != best_idx:
+                    remove_indices.add(idx)
+            continue
+
+        # Strategy 2: Exactly 2 — check spatial overlap
         # Build Shapely polygons and compute areas
         polys = []
         for idx in indices:
@@ -325,6 +353,18 @@ def _parse_args() -> argparse.Namespace:
         default="output",
         metavar="DIR",
         help="Output directory (default: ./output)",
+    )
+    p.add_argument(
+        "--no-tiling",
+        action="store_true",
+        default=False,
+        help="Disable tiled multi-scale detection (faster, less accurate)",
+    )
+    p.add_argument(
+        "--no-images",
+        action="store_true",
+        default=False,
+        help="Skip downloading BGG box art images (disables CLIP image matching)",
     )
     p.add_argument(
         "--version", "-V",
