@@ -158,7 +158,11 @@ def _run_pipeline(
 
         name = ident["game_name"] if ident else "?"
         if (i + 1) % 5 == 0 or i == 0 or i == len(segments) - 1:
-            print(f"  [{i+1}/{len(segments)}] {name} → {category}")
+            print(f"  [{i+1}/{len(segments)}] {name} -> {category}")
+
+    # Post-identification dedup: if multiple polygons identify as the
+    # same game AND overlap, keep only the smallest (tightest fit).
+    items = _dedup_same_game(items)
 
     return {
         "items": items,
@@ -172,6 +176,72 @@ def _run_pipeline(
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+def _dedup_same_game(items: list[dict]) -> list[dict]:
+    """
+    Remove duplicate polygons for the same game.
+
+    If two+ polygons are identified as the same game AND they overlap,
+    keep only the smallest (tightest bounding polygon). One physical box
+    can't occupy two places on the shelf.
+    """
+    from shapely.geometry import Polygon
+
+    # Group identified items by game name
+    by_name: dict[str, list[int]] = {}
+    for i, it in enumerate(items):
+        ident = it.get("identification")
+        if ident and ident.get("game_name"):
+            name = ident["game_name"].lower()
+            by_name.setdefault(name, []).append(i)
+
+    # Only process games with multiple detections
+    remove_indices = set()
+    for name, indices in by_name.items():
+        if len(indices) < 2:
+            continue
+
+        # Build Shapely polygons and compute areas
+        polys = []
+        for idx in indices:
+            pts = items[idx]["polygon"]
+            try:
+                p = Polygon(pts)
+                if not p.is_valid:
+                    from shapely.validation import make_valid
+                    p = make_valid(p)
+                polys.append((idx, p, p.area))
+            except Exception:
+                polys.append((idx, None, float("inf")))
+
+        # Sort by area (smallest first — tightest fit wins)
+        polys.sort(key=lambda x: x[2])
+
+        # Keep the smallest. For each larger polygon, check if it
+        # overlaps with the keeper — if so, mark for removal.
+        keeper_idx, keeper_poly, _ = polys[0]
+        for idx, poly, area in polys[1:]:
+            if poly is None or keeper_poly is None:
+                remove_indices.add(idx)
+                continue
+            try:
+                if poly.intersects(keeper_poly):
+                    remove_indices.add(idx)
+            except Exception:
+                remove_indices.add(idx)
+
+    if remove_indices:
+        # Log what we're removing
+        for idx in sorted(remove_indices):
+            ident = items[idx].get("identification") or {}
+            name = ident.get("game_name", "?")
+            print(f"  [dedup] Removing oversized duplicate: {name} (id={items[idx]['id']})")
+
+        items = [it for i, it in enumerate(items) if i not in remove_indices]
+        print(f"[dedup] Removed {len(remove_indices)} same-game duplicates")
+
+    return items
+
 
 def _load_collection(args: argparse.Namespace) -> BGGCollection:
     """Load BGG collection from API or CSV based on CLI args."""
