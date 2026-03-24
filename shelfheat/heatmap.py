@@ -439,6 +439,7 @@ _HTML_TEMPLATE = """\
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ShelfHeat{title_suffix}</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='h' x1='0' y1='0' x2='1' y2='1'><stop offset='0%25' stop-color='%2322c55e'/><stop offset='50%25' stop-color='%23dcb428'/><stop offset='100%25' stop-color='%23dc3232'/></linearGradient></defs><rect x='3' y='6' width='26' height='20' rx='3' fill='url(%23h)' stroke='%231a1a2e' stroke-width='1.5'/><rect x='3' y='6' width='26' height='6' rx='3' fill='%231a1a2e' opacity='.35'/><rect x='8' y='14' width='16' height='2' rx='1' fill='%231a1a2e' opacity='.4'/><rect x='10' y='18' width='12' height='1.5' rx='.75' fill='%231a1a2e' opacity='.25'/></svg>">
 <style>
 *{{margin:0;padding:0;box-sizing:border-box}}
 body{{
