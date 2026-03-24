@@ -69,12 +69,16 @@ class BGGCollection:
     def game_names(self) -> list[str]:
         return [g["name"] for g in self.games]
 
-    def match(self, query: str) -> dict | None:
+    def match(self, query: str, inherit_plays: bool = True) -> dict | None:
         """
         Match a query string against collection game names.
 
         Returns the best match dict with added "match_score" field,
         or None if below REVIEW_THRESHOLD.
+
+        If inherit_plays is True and the matched game has no play data,
+        checks BGG family/version links to find play data from related
+        games (e.g., base game plays applied to a Saga Collection edition).
         """
         if not self.games:
             return None
@@ -91,6 +95,16 @@ class BGGCollection:
         result = {**self.games[best_idx]}
         result["match_score"] = round(best_score, 4)
         result["match_quality"] = "auto" if best_score >= AUTO_MATCH_THRESHOLD else "review"
+
+        # Inherit play data from related games if this one has none
+        if inherit_plays and not result.get("last_played") and result.get("bgg_id"):
+            inherited = self._inherit_plays_from_family(result["bgg_id"])
+            if inherited:
+                result["last_played"] = inherited["last_played"]
+                result["play_count"] = inherited["play_count"]
+                result["play_inherited_from"] = inherited["from_name"]
+                result["play_inherited_from_id"] = inherited["from_id"]
+
         return result
 
     def match_top_k(self, query: str, k: int = 5) -> list[dict]:
@@ -112,6 +126,46 @@ class BGGCollection:
             result["match_score"] = round(score, 4)
             results.append(result)
         return results
+
+    def _inherit_plays_from_family(self, bgg_id: int) -> dict | None:
+        """
+        Check BGG family/version links for related games with play data.
+
+        Fetches the game's BGG "thing" data, finds related game IDs
+        (implementations, compilations, families), and checks if any
+        of those are in our collection with play data.
+        """
+        if not hasattr(self, "_family_cache"):
+            self._family_cache = {}
+
+        if bgg_id in self._family_cache:
+            return self._family_cache[bgg_id]
+
+        related_ids = _fetch_related_game_ids(bgg_id)
+        if not related_ids:
+            self._family_cache[bgg_id] = None
+            return None
+
+        # Build a lookup of our collection by bgg_id
+        if not hasattr(self, "_id_lookup"):
+            self._id_lookup = {g["bgg_id"]: g for g in self.games if g.get("bgg_id")}
+
+        # Check if any related game is in our collection WITH play data
+        for rid in related_ids:
+            if rid in self._id_lookup:
+                related_game = self._id_lookup[rid]
+                if related_game.get("last_played") or related_game.get("play_count", 0) > 0:
+                    result = {
+                        "last_played": related_game.get("last_played"),
+                        "play_count": related_game.get("play_count", 0),
+                        "from_name": related_game["name"],
+                        "from_id": rid,
+                    }
+                    self._family_cache[bgg_id] = result
+                    return result
+
+        self._family_cache[bgg_id] = None
+        return None
 
     def _ensure_embeddings(self):
         if self._name_embeddings is not None:
@@ -220,6 +274,50 @@ def _fetch_plays(username: str, max_pages: int = 10) -> dict[int, str]:
     return latest
 
 
+def _fetch_related_game_ids(bgg_id: int) -> list[int]:
+    """
+    Fetch related game IDs from BGG's thing API.
+
+    Looks for: implementations, compilations, reimplementations, and
+    games in the same family. Returns a list of related BGG IDs.
+    """
+    url = f"{BGG_API_BASE}/thing"
+    try:
+        resp = requests.get(url, params={"id": bgg_id, "type": "boardgame"}, timeout=15)
+        if resp.status_code != 200:
+            return []
+    except Exception:
+        return []
+
+    try:
+        root = ET.fromstring(resp.text)
+    except Exception:
+        return []
+
+    related = set()
+    item = root.find("item")
+    if item is None:
+        return []
+
+    # Link types that indicate related games
+    link_types = [
+        "boardgameimplementation",   # reimplements / is implemented by
+        "boardgamecompilation",      # compiles / is compiled in
+        "boardgameintegration",      # integrates with
+    ]
+
+    for link in item.findall("link"):
+        if link.get("type") in link_types:
+            try:
+                rid = int(link.get("id", 0))
+                if rid and rid != bgg_id:
+                    related.add(rid)
+            except ValueError:
+                pass
+
+    return list(related)
+
+
 def _merge_play_dates(games: list[dict], plays: dict[int, str]):
     for game in games:
         bgg_id = game.get("bgg_id")
@@ -236,6 +334,7 @@ _CSV_NAME_COLS = ("objectname", "name", "game", "title")
 _CSV_ID_COLS = ("objectid", "bggid", "gameid", "id")
 _CSV_PLAYS_COLS = ("numplays", "plays", "num plays")
 _CSV_RATING_COLS = ("rating", "userrating", "your rating")
+_CSV_LASTPLAYED_COLS = ("lastplayed", "last_played", "last played", "lastplay")
 
 
 def _find_col(headers: list[str], candidates: tuple[str, ...]) -> str | None:
@@ -279,10 +378,19 @@ def _parse_csv_row(row: dict) -> dict | None:
             except ValueError:
                 pass
 
+    # Last played date
+    lp_col = _find_col(headers, _CSV_LASTPLAYED_COLS)
+    last_played = None
+    if lp_col and row.get(lp_col):
+        val = row[lp_col].strip()
+        if val:
+            # Handle both "2024-01-15" and "2024-01-15 12:30:00" formats
+            last_played = val[:10] if len(val) >= 10 else val
+
     return {
         "name": row[name_col].strip(),
         "bgg_id": bgg_id,
         "play_count": play_count,
-        "last_played": None,  # CSV doesn't include this
+        "last_played": last_played,
         "user_rating": user_rating,
     }

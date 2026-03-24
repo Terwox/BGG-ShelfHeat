@@ -1,15 +1,22 @@
 """
-Stage 2: SAM2 polygon refinement.
+Stage 2: SAM2 polygon refinement + overlap suppression.
 
 Takes OWLv2 bounding boxes and refines them into oriented polygon masks
-using SAM2 segmentation + cv2.minAreaRect.
+using SAM2 segmentation + cv2.minAreaRect, then removes physical overlaps
+via Shapely polygon clipping (painter's algorithm — highest confidence first).
 """
 
 import numpy as np
 import cv2
 from PIL import Image
+from shapely.geometry import Polygon
+from shapely.validation import make_valid
 
 SAM2_MODEL_ID = "facebook/sam2.1-hiera-base-plus"
+
+# Overlap suppression config
+MIN_AREA_RATIO = 0.20  # discard if clipped below 20% of original area
+MIN_ABSOLUTE_AREA = 100  # discard tiny polygons (in detection-res pixels²)
 
 
 def segment_boxes(
@@ -127,4 +134,100 @@ def segment_boxes(
     if device == "cuda":
         torch.cuda.empty_cache()
 
+    # Post-process: remove physical overlaps
+    results = suppress_overlaps(results)
+
     return results
+
+
+# ---------------------------------------------------------------------------
+# Overlap suppression (painter's algorithm with Shapely)
+# ---------------------------------------------------------------------------
+
+def suppress_overlaps(segments: list[dict]) -> list[dict]:
+    """
+    Remove overlapping polygon regions using a greedy painter's algorithm.
+
+    Highest-confidence polygons claim their area first. Lower-confidence
+    polygons get clipped to remove any overlap. If clipping shrinks a
+    polygon below MIN_AREA_RATIO of its original size, it's discarded.
+
+    Physical constraint: game boxes can't overlap in the camera's 2D projection.
+    """
+    if not segments:
+        return segments
+
+    # Sort by confidence (highest first — they get priority)
+    ordered = sorted(segments, key=lambda s: s["confidence"], reverse=True)
+
+    claimed = []       # Shapely polygons that have claimed space
+    surviving = []     # segments that survive suppression
+
+    before = len(ordered)
+
+    for seg in ordered:
+        pts = seg["polygon"]
+        if len(pts) < 3:
+            continue
+
+        try:
+            poly = Polygon(pts)
+            if not poly.is_valid:
+                poly = make_valid(poly)
+            if poly.is_empty or poly.area < MIN_ABSOLUTE_AREA:
+                continue
+        except Exception:
+            continue
+
+        original_area = poly.area
+
+        # Subtract all previously claimed regions
+        for claimed_poly in claimed:
+            if poly.intersects(claimed_poly):
+                try:
+                    poly = poly.difference(claimed_poly)
+                    if not poly.is_valid:
+                        poly = make_valid(poly)
+                except Exception:
+                    break
+
+        if poly.is_empty:
+            continue
+
+        remaining_ratio = poly.area / original_area if original_area > 0 else 0
+
+        if remaining_ratio < MIN_AREA_RATIO:
+            continue  # too much was clipped away — probably a duplicate
+
+        if poly.area < MIN_ABSOLUTE_AREA:
+            continue
+
+        # Update polygon to the clipped version
+        # If clipping produced a MultiPolygon, keep the largest piece
+        if poly.geom_type == "MultiPolygon":
+            poly = max(poly.geoms, key=lambda g: g.area)
+
+        # Convert back to our polygon format (4-point oriented box)
+        clipped_pts = _shapely_to_oriented_box(poly)
+        seg_copy = {**seg}
+        seg_copy["polygon"] = clipped_pts
+        seg_copy["clipped"] = remaining_ratio < 0.95  # flag if it was trimmed
+        seg_copy["clip_ratio"] = round(remaining_ratio, 3)
+
+        surviving.append(seg_copy)
+        claimed.append(Polygon(pts))  # claim the ORIGINAL area, not the clipped one
+
+    after = len(surviving)
+    removed = before - after
+    clipped = sum(1 for s in surviving if s.get("clipped", False))
+    print(f"[segment] Overlap suppression: {before} → {after} ({removed} removed, {clipped} clipped)")
+
+    return surviving
+
+
+def _shapely_to_oriented_box(poly: Polygon) -> list[list[float]]:
+    """Convert a Shapely polygon to a 4-point oriented bounding box."""
+    # Get the minimum rotated rectangle
+    mrr = poly.minimum_rotated_rectangle
+    coords = list(mrr.exterior.coords)[:4]  # drop the closing duplicate
+    return [[round(x, 1), round(y, 1)] for x, y in coords]

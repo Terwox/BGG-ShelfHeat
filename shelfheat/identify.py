@@ -107,7 +107,7 @@ class GameIdentifier:
 
         # Tier B: CLIP visual matching
         result = self._try_clip(crop)
-        if result and result["confidence"] >= 0.15:
+        if result and result["confidence"] >= 0.35:
             return result
 
         return None
@@ -224,7 +224,7 @@ class GameIdentifier:
             for idx in top_indices
         ]
 
-        if best_score >= 0.15:
+        if best_score >= 0.35:
             return {
                 "method": "clip",
                 "game_name": self.game_names[best_idx],

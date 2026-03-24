@@ -16,6 +16,10 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Fix Windows console encoding for Unicode box-drawing characters
+if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 from shelfheat import __version__
 from shelfheat.detect import detect_boxes
 from shelfheat.heatmap import classify_item, compute_summary, generate_heatmap

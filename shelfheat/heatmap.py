@@ -234,6 +234,28 @@ def generate_heatmap(
     legend_html = _build_legend_html(summary)
     title_suffix = f" &mdash; {html_mod.escape(bgg_user)}" if bgg_user else ""
 
+    # Build game list for the edit UI (name + bgg_id for all collection games)
+    game_list_json = "[]"
+    # Extract unique game names from items that have collection matches
+    all_game_names = set()
+    for it in items:
+        m = it.get("collection_match")
+        if m and m.get("name"):
+            all_game_names.add(m["name"])
+        ident = it.get("identification")
+        if ident and ident.get("game_name"):
+            all_game_names.add(ident["game_name"])
+    game_list_json = json.dumps(sorted(all_game_names), ensure_ascii=True)
+
+    # Build items JSON for the edit UI (so edits can write back)
+    items_json = json.dumps(
+        [{"id": it.get("id", i), "category": it.get("category", ""),
+          "name": (it.get("identification") or {}).get("game_name", ""),
+          "polygon": it.get("polygon", [])}
+         for i, it in enumerate(items)],
+        ensure_ascii=True,
+    )
+
     page = _HTML_TEMPLATE.format(
         title_suffix=title_suffix,
         photo_mime=photo_mime,
@@ -243,6 +265,8 @@ def generate_heatmap(
         polygons_svg=polygons_svg,
         stats_html=stats_html,
         legend_html=legend_html,
+        game_list_json=game_list_json,
+        items_json=items_json,
     )
 
     out = Path(output_path)
@@ -338,6 +362,48 @@ main{{
   text-align:center;color:#666;font-size:1.1rem;
   padding:3rem;
 }}
+/* Edit panel */
+.edit-panel{{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:#1a1a3af8;border:1px solid #4a4a6a;border-radius:12px;
+  padding:1.4rem;width:340px;z-index:1100;
+  box-shadow:0 8px 40px rgba(0,0,0,.6);backdrop-filter:blur(10px);
+  display:none;
+}}
+.edit-panel.vis{{display:block}}
+.edit-panel h3{{margin-bottom:.8rem;color:#e8e8f0;font-size:1rem}}
+.edit-panel input{{
+  width:100%;padding:.5rem .7rem;background:#0e0e20;color:#ddd;
+  border:1px solid #3a3a5a;border-radius:6px;font-size:.88rem;
+  margin-bottom:.5rem;outline:none;
+}}
+.edit-panel input:focus{{border-color:#6a6aff}}
+.edit-results{{
+  max-height:200px;overflow-y:auto;margin-bottom:.8rem;
+}}
+.edit-results .er{{
+  padding:.4rem .6rem;cursor:pointer;border-radius:4px;
+  font-size:.84rem;color:#bbb;
+}}
+.edit-results .er:hover,.edit-results .er.sel{{
+  background:#2a2a5a;color:#fff;
+}}
+.edit-btns{{display:flex;gap:.5rem;justify-content:flex-end}}
+.edit-btns button{{
+  padding:.45rem .9rem;border:none;border-radius:5px;
+  cursor:pointer;font-size:.82rem;font-weight:600;
+}}
+.btn-save{{background:#2a8a4a;color:#fff}}
+.btn-save:hover{{background:#35a55a}}
+.btn-notgame{{background:#6a2a2a;color:#fff}}
+.btn-notgame:hover{{background:#8a3535}}
+.btn-cancel{{background:#333;color:#aaa}}
+.btn-cancel:hover{{background:#444}}
+.edit-overlay{{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.4);z-index:1050;display:none;
+}}
+.edit-overlay.vis{{display:block}}
 </style>
 </head>
 <body>
@@ -356,10 +422,32 @@ main{{
 </main>
 <div class="legend">{legend_html}</div>
 <div class="tip" id="tip"></div>
+<div class="edit-overlay" id="editOverlay"></div>
+<div class="edit-panel" id="editPanel">
+  <h3 id="editTitle">Edit identification</h3>
+  <input type="text" id="editSearch" placeholder="Search your collection..." autocomplete="off">
+  <div class="edit-results" id="editResults"></div>
+  <div class="edit-btns">
+    <button class="btn-notgame" id="btnNotGame">Not a game</button>
+    <button class="btn-cancel" id="btnCancel">Cancel</button>
+    <button class="btn-save" id="btnSave">Save</button>
+  </div>
+</div>
 <script>
 (function(){{
   const tip=document.getElementById('tip');
-  document.querySelectorAll('.gp').forEach(p=>{{
+  const editPanel=document.getElementById('editPanel');
+  const editOverlay=document.getElementById('editOverlay');
+  const editSearch=document.getElementById('editSearch');
+  const editResults=document.getElementById('editResults');
+  const editTitle=document.getElementById('editTitle');
+  const gameList={game_list_json};
+  const itemsData={items_json};
+  let editTarget=null;  // the polygon element being edited
+  let editSelected=null;  // selected game name
+
+  // Hover tooltips
+  document.querySelectorAll('.gp').forEach((p,idx)=>{{
     p.addEventListener('mouseenter',()=>{{
       const d=JSON.parse(p.dataset.info);
       let h='';
@@ -372,7 +460,7 @@ main{{
         if(d.rating) h+='Your rating: <span>'+d.rating+'/10</span>';
         h+='</div>';
       }}else{{
-        h='<h3>Unidentified</h3><div class="dt">'+esc(d.label||'Could not identify')+'</div>';
+        h='<h3>Unidentified</h3><div class="dt">'+esc(d.label||'Could not identify')+'<br><em>Click to identify</em></div>';
       }}
       tip.innerHTML=h;
       tip.classList.add('vis');
@@ -386,7 +474,118 @@ main{{
       tip.style.top=y+'px';
     }});
     p.addEventListener('mouseleave',()=>tip.classList.remove('vis'));
+
+    // Click to edit
+    p.addEventListener('click',()=>{{
+      tip.classList.remove('vis');
+      editTarget=p;
+      editSelected=null;
+      const d=JSON.parse(p.dataset.info);
+      editTitle.textContent=d.name?'Edit: '+d.name:'Identify this game';
+      editSearch.value='';
+      renderResults('');
+      editPanel.classList.add('vis');
+      editOverlay.classList.add('vis');
+      editSearch.focus();
+      // highlight the polygon
+      p.setAttribute('stroke','#ffffff');
+      p.setAttribute('stroke-width','4');
+      p.setAttribute('fill-opacity','0.5');
+    }});
   }});
+
+  // Search filter
+  editSearch.addEventListener('input',()=>renderResults(editSearch.value));
+
+  function renderResults(q){{
+    const lq=q.toLowerCase();
+    const matches=lq?gameList.filter(n=>n.toLowerCase().includes(lq)).slice(0,20):gameList.slice(0,20);
+    editResults.innerHTML=matches.map(n=>
+      '<div class="er'+(n===editSelected?' sel':'')+'" data-name="'+esc(n)+'">'+esc(n)+'</div>'
+    ).join('');
+    editResults.querySelectorAll('.er').forEach(el=>{{
+      el.addEventListener('click',()=>{{
+        editSelected=el.dataset.name;
+        editResults.querySelectorAll('.er').forEach(e=>e.classList.remove('sel'));
+        el.classList.add('sel');
+      }});
+    }});
+  }}
+
+  // Save edit
+  document.getElementById('btnSave').addEventListener('click',()=>{{
+    if(!editTarget||!editSelected) return;
+    const d=JSON.parse(editTarget.dataset.info);
+    d.name=editSelected;
+    d.label='Manually identified';
+    d.method='manual';
+    editTarget.dataset.info=JSON.stringify(d);
+    // Update edits log
+    logEdit(editTarget, editSelected, 'identify');
+    closeEdit();
+  }});
+
+  // Not a game
+  document.getElementById('btnNotGame').addEventListener('click',()=>{{
+    if(!editTarget) return;
+    editTarget.style.display='none';  // hide the polygon
+    logEdit(editTarget, null, 'not_a_game');
+    closeEdit();
+  }});
+
+  // Cancel
+  document.getElementById('btnCancel').addEventListener('click',closeEdit);
+  editOverlay.addEventListener('click',closeEdit);
+  document.addEventListener('keydown',e=>{{if(e.key==='Escape')closeEdit()}});
+
+  function closeEdit(){{
+    editPanel.classList.remove('vis');
+    editOverlay.classList.remove('vis');
+    if(editTarget){{
+      // restore polygon style
+      const d=JSON.parse(editTarget.dataset.info);
+      const color=editTarget.getAttribute('fill');
+      editTarget.setAttribute('stroke-width','2');
+      editTarget.setAttribute('fill-opacity','0.30');
+    }}
+    editTarget=null;
+    editSelected=null;
+  }}
+
+  // Track edits for export
+  const edits=[];
+  function logEdit(poly, name, action){{
+    const idx=[...document.querySelectorAll('.gp')].indexOf(poly);
+    edits.push({{index:idx, name:name, action:action, time:new Date().toISOString()}});
+    // Store in localStorage for persistence
+    const key='shelfheat_edits_'+window.location.pathname;
+    localStorage.setItem(key, JSON.stringify(edits));
+    console.log('[ShelfHeat] Edit saved:', edits[edits.length-1]);
+  }}
+
+  // Load edits from localStorage on page load
+  const savedKey='shelfheat_edits_'+window.location.pathname;
+  const saved=localStorage.getItem(savedKey);
+  if(saved){{
+    try{{
+      const se=JSON.parse(saved);
+      const polys=document.querySelectorAll('.gp');
+      se.forEach(e=>{{
+        if(e.index>=0&&e.index<polys.length){{
+          if(e.action==='not_a_game'){{
+            polys[e.index].style.display='none';
+          }}else if(e.action==='identify'&&e.name){{
+            const d=JSON.parse(polys[e.index].dataset.info);
+            d.name=e.name;d.label='Manually identified';d.method='manual';
+            polys[e.index].dataset.info=JSON.stringify(d);
+          }}
+          edits.push(e);
+        }}
+      }});
+      if(se.length) console.log('[ShelfHeat] Loaded',se.length,'saved edits');
+    }}catch(ex){{}}
+  }}
+
   function esc(s){{
     const d=document.createElement('div');
     d.textContent=s;

@@ -19,3 +19,4 @@ requests>=2.31.0
 # Image processing
 opencv-python>=4.8.0
 numpy>=1.24.0
+shapely>=2.0.0
