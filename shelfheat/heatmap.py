@@ -665,7 +665,7 @@ main{{
     }});
   }}
 
-  // Save edit — also pulls in play data from collection
+  // Save edit — pulls in play data + recolors polygon
   document.getElementById('btnSave').addEventListener('click',()=>{{
     if(!editTarget||!editSelected) return;
     const d=JSON.parse(editTarget.dataset.info);
@@ -677,8 +677,26 @@ main{{
     if(gd){{
       d.plays=gd.plays||0;
       d.last_played=gd.last_played||'Never';
+      // Compute days_since for color
+      if(gd.last_played){{
+        const lp=new Date(gd.last_played);
+        if(!isNaN(lp)) d.days=Math.floor((Date.now()-lp.getTime())/86400000);
+      }}
+      d.cat=d.days!==undefined?'played':'never_played';
+    }}else{{
+      // Not in collection
+      d.cat='not_in_collection';
     }}
     editTarget.dataset.info=JSON.stringify(d);
+    // Recolor this polygon
+    const stops=palettes[currentPal];
+    let c;
+    if(d.days!==undefined) c=lerpColor(Math.sqrt(Math.min(d.days,maxDays)/maxDays),stops);
+    else if(d.cat==='never_played') c=specialColors.never_played;
+    else if(d.cat==='not_in_collection') c=specialColors.not_in_collection;
+    else c=specialColors.unidentified;
+    editTarget.setAttribute('fill',c);
+    editTarget.setAttribute('stroke',c);
     // Update edits log
     logEdit(editTarget, editSelected, 'identify');
     closeEdit();
@@ -731,12 +749,31 @@ main{{
       const polys=document.querySelectorAll('.gp');
       se.forEach(e=>{{
         if(e.index>=0&&e.index<polys.length){{
+          const p=polys[e.index];
           if(e.action==='not_a_game'){{
-            polys[e.index].style.display='none';
+            p.style.display='none';
           }}else if(e.action==='identify'&&e.name){{
-            const d=JSON.parse(polys[e.index].dataset.info);
+            const d=JSON.parse(p.dataset.info);
             d.name=e.name;d.label='Manually identified';d.method='manual';
-            polys[e.index].dataset.info=JSON.stringify(d);
+            const gd=gameLookup[e.name];
+            if(gd){{
+              d.plays=gd.plays||0;
+              d.last_played=gd.last_played||'Never';
+              if(gd.last_played){{
+                const lp=new Date(gd.last_played);
+                if(!isNaN(lp)) d.days=Math.floor((Date.now()-lp.getTime())/86400000);
+              }}
+              d.cat=d.days!==undefined?'played':'never_played';
+            }}else{{ d.cat='not_in_collection'; }}
+            p.dataset.info=JSON.stringify(d);
+            // Recolor
+            const stops=palettes[currentPal];
+            let c;
+            if(d.days!==undefined) c=lerpColor(Math.sqrt(Math.min(d.days,maxDays)/maxDays),stops);
+            else if(d.cat==='never_played') c=specialColors.never_played;
+            else if(d.cat==='not_in_collection') c=specialColors.not_in_collection;
+            else c=specialColors.unidentified;
+            p.setAttribute('fill',c);p.setAttribute('stroke',c);
           }}
           edits.push(e);
         }}
