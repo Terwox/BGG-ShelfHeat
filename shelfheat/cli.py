@@ -13,6 +13,7 @@ import argparse
 import json
 import sys
 import time
+import html as html_mod
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -61,7 +62,7 @@ def main():
         # Full collection for the edit UI (name + play data)
         collection_for_ui = [
             {
-                "name": g["name"],
+                "name": html_mod.unescape(g["name"]),
                 "plays": g.get("play_count", 0),
                 "last_played": g.get("last_played") or "",
             }

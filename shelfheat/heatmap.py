@@ -221,7 +221,7 @@ def _build_polygon_svg(item: dict) -> str:
     tip: dict = {"label": item.get("label", ""), "cat": item.get("category", "")}
     ident = item.get("identification")
     if ident:
-        tip["name"] = ident.get("game_name", "")
+        tip["name"] = html_mod.unescape(ident.get("game_name", ""))
         tip["method"] = ident.get("method", "")
         tip["id_confidence"] = ident.get("confidence", 0)
     match = item.get("collection_match")
