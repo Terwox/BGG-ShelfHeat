@@ -298,12 +298,20 @@ def _build_legend_html(summary: dict) -> str:
             f'</div>'
         )
 
-    # Palette toggle button
+    # Palette toggle + edit persistence buttons
     parts.append(
-        '<div style="margin-top:.6rem;text-align:center">'
+        '<div style="margin-top:.6rem;text-align:center;display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap">'
         '<button id="palToggle" style="background:#2a2a4a;color:#999;border:1px solid #3a3a5a;'
         'border-radius:5px;padding:.3rem .7rem;cursor:pointer;font-size:.72rem">'
-        'Colorblind mode</button></div>'
+        'Colorblind mode</button>'
+        '<button id="btnExport" style="background:#2a2a4a;color:#999;border:1px solid #3a3a5a;'
+        'border-radius:5px;padding:.3rem .7rem;cursor:pointer;font-size:.72rem">'
+        '💾 Export edits</button>'
+        '<button id="btnImport" style="background:#2a2a4a;color:#999;border:1px solid #3a3a5a;'
+        'border-radius:5px;padding:.3rem .7rem;cursor:pointer;font-size:.72rem">'
+        '📂 Import edits</button>'
+        '<input type="file" id="importFile" accept=".json" style="display:none">'
+        '</div>'
     )
 
     return "\n".join(parts)
@@ -745,46 +753,110 @@ main{{
   }}
 
   // Load edits from localStorage on page load
+  // Restore from localStorage first
   const savedKey='shelfheat_edits_'+window.location.pathname;
   const saved=localStorage.getItem(savedKey);
   if(saved){{
     try{{
       const se=JSON.parse(saved);
-      const polys=document.querySelectorAll('.gp');
-      se.forEach(e=>{{
-        if(e.index>=0&&e.index<polys.length){{
-          const p=polys[e.index];
-          if(e.action==='not_a_game'){{
-            p.style.display='none';
-          }}else if(e.action==='identify'&&e.name){{
-            const d=JSON.parse(p.dataset.info);
-            d.name=e.name;d.label='Manually identified';d.method='manual';
-            const gd=gameLookup[e.name];
-            if(gd){{
-              d.plays=gd.plays||0;
-              d.last_played=gd.last_played||'Never';
-              if(gd.last_played){{
-                const lp=new Date(gd.last_played);
-                if(!isNaN(lp)) d.days=Math.floor((Date.now()-lp.getTime())/86400000);
-              }}
-              d.cat=d.days!==undefined?'played':'never_played';
-            }}else{{ d.cat='not_in_collection'; delete d.days; }}
-            p.dataset.info=JSON.stringify(d);
-            // Recolor
-            const stops=palettes[currentPal];
-            let c;
-            if(d.days!==undefined) c=lerpColor(Math.sqrt(Math.min(d.days,maxDays)/maxDays),stops);
-            else if(d.cat==='never_played') c=specialColors.never_played;
-            else if(d.cat==='not_in_collection') c=specialColors.not_in_collection;
-            else c=specialColors.unidentified;
-            p.setAttribute('fill',c);p.setAttribute('stroke',c);
-          }}
-          edits.push(e);
-        }}
-      }});
-      if(se.length) console.log('[ShelfHeat] Loaded',se.length,'saved edits');
+      if(Array.isArray(se)&&se.length){{
+        const n=applyEdits(se);
+        if(n) console.log('[ShelfHeat] Loaded',n,'edits from localStorage');
+      }}
     }}catch(ex){{}}
   }}
+
+  // --- Edit persistence: sidecar JSON ---
+  function editsFileName(){{
+    const p=window.location.pathname;
+    return p.replace(/_heatmap\.html$/,'_edits.json').replace(/^.*\//,'');
+  }}
+
+  function applyEdits(se){{
+    const polys=document.querySelectorAll('.gp');
+    let applied=0;
+    se.forEach(e=>{{
+      if(e.index>=0&&e.index<polys.length){{
+        const p=polys[e.index];
+        if(e.action==='not_a_game'){{
+          p.style.display='none';
+        }}else if(e.action==='identify'&&e.name){{
+          const d=JSON.parse(p.dataset.info);
+          d.name=e.name;d.label='Manually identified';d.method='manual';
+          const gd=gameLookup[e.name];
+          if(gd){{
+            d.plays=gd.plays||0;
+            d.last_played=gd.last_played||'Never';
+            if(gd.last_played){{
+              const lp=new Date(gd.last_played);
+              if(!isNaN(lp)) d.days=Math.floor((Date.now()-lp.getTime())/86400000);
+            }}
+            d.cat=d.days!==undefined?'played':'never_played';
+          }}else{{ d.cat='not_in_collection'; delete d.days; }}
+          p.dataset.info=JSON.stringify(d);
+          const stops=palettes[currentPal];
+          let c;
+          if(d.days!==undefined) c=lerpColor(Math.sqrt(Math.min(d.days,maxDays)/maxDays),stops);
+          else if(d.cat==='never_played') c=specialColors.never_played;
+          else if(d.cat==='not_in_collection') c=specialColors.not_in_collection;
+          else c=specialColors.unidentified;
+          p.setAttribute('fill',c);p.setAttribute('stroke',c);
+        }}
+        if(!edits.find(x=>x.index===e.index&&x.action===e.action&&x.name===e.name)) edits.push(e);
+        applied++;
+      }}
+    }});
+    return applied;
+  }}
+
+  // Try loading sidecar JSON via fetch (works with HTTP server)
+  (async()=>{{
+    if(edits.length) return;  // already loaded from localStorage
+    try{{
+      const r=await fetch('./'+editsFileName());
+      if(r.ok){{
+        const se=await r.json();
+        if(Array.isArray(se)&&se.length){{
+          const n=applyEdits(se);
+          console.log('[ShelfHeat] Loaded',n,'edits from sidecar JSON');
+        }}
+      }}
+    }}catch(ex){{}}
+  }})();
+
+  // Export edits → download JSON
+  document.getElementById('btnExport').addEventListener('click',()=>{{
+    if(!edits.length){{ alert('No edits to export'); return; }}
+    const blob=new Blob([JSON.stringify(edits,null,2)],{{type:'application/json'}});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=editsFileName();
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }});
+
+  // Import edits ← load JSON file
+  const importFile=document.getElementById('importFile');
+  document.getElementById('btnImport').addEventListener('click',()=>importFile.click());
+  importFile.addEventListener('change',()=>{{
+    const f=importFile.files[0];
+    if(!f) return;
+    const reader=new FileReader();
+    reader.onload=()=>{{
+      try{{
+        const se=JSON.parse(reader.result);
+        if(!Array.isArray(se)){{ alert('Invalid edits file'); return; }}
+        const n=applyEdits(se);
+        // Merge into localStorage too
+        const key='shelfheat_edits_'+window.location.pathname;
+        localStorage.setItem(key,JSON.stringify(edits));
+        console.log('[ShelfHeat] Imported',n,'edits from file');
+        alert('Imported '+n+' edits');
+      }}catch(ex){{ alert('Failed to parse edits: '+ex.message); }}
+    }};
+    reader.readAsText(f);
+    importFile.value='';
+  }});
 
   function esc(s){{
     const d=document.createElement('div');
