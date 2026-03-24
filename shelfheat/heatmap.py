@@ -575,7 +575,7 @@ main{{
 <div class="edit-overlay" id="editOverlay"></div>
 <div class="edit-panel" id="editPanel">
   <h3 id="editTitle">Edit identification</h3>
-  <input type="text" id="editSearch" placeholder="Search your collection..." autocomplete="off">
+  <input type="text" id="editSearch" placeholder="Search collection or type any name..." autocomplete="off">
   <div class="edit-results" id="editResults"></div>
   <div class="edit-btns">
     <button class="btn-notgame" id="btnNotGame">Not a game</button>
@@ -667,13 +667,14 @@ main{{
 
   // Save edit — pulls in play data + recolors polygon
   document.getElementById('btnSave').addEventListener('click',()=>{{
-    if(!editTarget||!editSelected) return;
+    const name=editSelected||editSearch.value.trim();
+    if(!editTarget||!name) return;
     const d=JSON.parse(editTarget.dataset.info);
-    d.name=editSelected;
+    d.name=name;
     d.label='Manually identified';
     d.method='manual';
     // Pull in play data from collection lookup
-    const gd=gameLookup[editSelected];
+    const gd=gameLookup[name];
     if(gd){{
       d.plays=gd.plays||0;
       d.last_played=gd.last_played||'Never';
@@ -684,8 +685,11 @@ main{{
       }}
       d.cat=d.days!==undefined?'played':'never_played';
     }}else{{
-      // Not in collection
+      // Not in collection — clear any stale play data
       d.cat='not_in_collection';
+      delete d.days;
+      delete d.plays;
+      delete d.last_played;
     }}
     editTarget.dataset.info=JSON.stringify(d);
     // Recolor this polygon
@@ -698,7 +702,7 @@ main{{
     editTarget.setAttribute('fill',c);
     editTarget.setAttribute('stroke',c);
     // Update edits log
-    logEdit(editTarget, editSelected, 'identify');
+    logEdit(editTarget, name, 'identify');
     closeEdit();
   }});
 
@@ -764,7 +768,7 @@ main{{
                 if(!isNaN(lp)) d.days=Math.floor((Date.now()-lp.getTime())/86400000);
               }}
               d.cat=d.days!==undefined?'played':'never_played';
-            }}else{{ d.cat='not_in_collection'; }}
+            }}else{{ d.cat='not_in_collection'; delete d.days; }}
             p.dataset.info=JSON.stringify(d);
             // Recolor
             const stops=palettes[currentPal];
