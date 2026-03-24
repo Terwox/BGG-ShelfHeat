@@ -58,12 +58,16 @@ def main():
         # Write heatmap HTML
         stem = photo.stem
         html_path = output_dir / f"{stem}_heatmap.html"
+        # Full collection names for the edit UI search dropdown
+        all_collection_names = [g["name"] for g in collection.games if g.get("name")]
+
         generate_heatmap(
             photo_path=str(photo),
             items=results["items"],
             detection_size=tuple(results["detection_size"]),
             output_path=str(html_path),
             bgg_user=args.bgg_user,
+            collection_names=all_collection_names,
         )
 
         # Write results JSON (for the standalone viewer)

@@ -305,17 +305,20 @@ def generate_heatmap(
     detection_size: tuple[int, int],
     output_path: str,
     bgg_user: str | None = None,
+    collection_names: list[str] | None = None,
 ) -> str:
     """
     Generate a self-contained HTML heatmap file.
 
     Args:
-        photo_path:     Path to the original shelf photo.
-        items:          Classified items — each needs polygon, identification,
-                        collection_match, category, color, label.
-        detection_size: (width, height) of the detection-res image.
-        output_path:    Where to write the .html file.
-        bgg_user:       Optional BGG username for the page title.
+        photo_path:       Path to the original shelf photo.
+        items:            Classified items — each needs polygon, identification,
+                          collection_match, category, color, label.
+        detection_size:   (width, height) of the detection-res image.
+        output_path:      Where to write the .html file.
+        bgg_user:         Optional BGG username for the page title.
+        collection_names: Full list of game names from the user's BGG collection.
+                          Used in the edit UI search dropdown.
 
     Returns the output file path.
     """
@@ -328,18 +331,20 @@ def generate_heatmap(
     legend_html = _build_legend_html(summary)
     title_suffix = f" &mdash; {html_mod.escape(bgg_user)}" if bgg_user else ""
 
-    # Build game list for the edit UI (name + bgg_id for all collection games)
-    game_list_json = "[]"
-    # Extract unique game names from items that have collection matches
-    all_game_names = set()
-    for it in items:
-        m = it.get("collection_match")
-        if m and m.get("name"):
-            all_game_names.add(m["name"])
-        ident = it.get("identification")
-        if ident and ident.get("game_name"):
-            all_game_names.add(ident["game_name"])
-    game_list_json = json.dumps(sorted(all_game_names), ensure_ascii=True)
+    # Build game list for the edit UI — prefer full collection, fall back to detected
+    if collection_names:
+        all_game_names = sorted(set(collection_names))
+    else:
+        names = set()
+        for it in items:
+            m = it.get("collection_match")
+            if m and m.get("name"):
+                names.add(m["name"])
+            ident = it.get("identification")
+            if ident and ident.get("game_name"):
+                names.add(ident["game_name"])
+        all_game_names = sorted(names)
+    game_list_json = json.dumps(all_game_names, ensure_ascii=True)
 
     # Build items JSON for the edit UI (so edits can write back)
     items_json = json.dumps(
