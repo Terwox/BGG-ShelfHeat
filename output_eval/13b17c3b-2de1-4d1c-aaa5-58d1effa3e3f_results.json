@@ -1,0 +1,4323 @@
+{
+  "version": "0.1.0",
+  "generated": "2026-03-24T20:05:14.620522+00:00",
+  "photo_filename": "13b17c3b-2de1-4d1c-aaa5-58d1effa3e3f.jpg",
+  "original_size": [
+    1928,
+    2560
+  ],
+  "detection_size": [
+    1542,
+    2048
+  ],
+  "scale_factor": 0.8,
+  "bgg_user": null,
+  "items": [
+    {
+      "id": 0,
+      "polygon": [
+        [
+          852.5,
+          860.9
+        ],
+        [
+          845.9,
+          978.6
+        ],
+        [
+          1115.6,
+          993.7
+        ],
+        [
+          1122.2,
+          876.0
+        ]
+      ],
+      "confidence": 0.6328,
+      "sam_score": 0.9794,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 1,
+      "polygon": [
+        [
+          1199.4,
+          1044.3
+        ],
+        [
+          1503.1,
+          1049.4
+        ],
+        [
+          1505.6,
+          901.6
+        ],
+        [
+          1201.9,
+          896.5
+        ]
+      ],
+      "confidence": 0.6193,
+      "sam_score": 0.9718,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 2,
+      "polygon": [
+        [
+          796.4,
+          823.3
+        ],
+        [
+          609.4,
+          826.4
+        ],
+        [
+          611.4,
+          946.1
+        ],
+        [
+          798.4,
+          943.0
+        ]
+      ],
+      "confidence": 0.6072,
+      "sam_score": 0.9387,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 3,
+      "polygon": [
+        [
+          793.7,
+          1082.1
+        ],
+        [
+          1197.4,
+          1099.7
+        ],
+        [
+          1203.6,
+          957.5
+        ],
+        [
+          799.9,
+          939.9
+        ]
+      ],
+      "confidence": 0.5967,
+      "sam_score": 0.982,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Concordia Venus",
+        "confidence": 0.7507,
+        "detail": {
+          "fragments": [
+            {
+              "text": "8anE5",
+              "confidence": 0.12463999336771006
+            },
+            {
+              "text": "CONCO RDIA",
+              "confidence": 0.6295929011756933
+            },
+            {
+              "text": "VENUS",
+              "confidence": 0.9998432079129674
+            },
+            {
+              "text": "Qo",
+              "confidence": 0.08795269271900245
+            },
+            {
+              "text": "PeeR",
+              "confidence": 0.835209846496582
+            },
+            {
+              "text": "SULveSGek",
+              "confidence": 0.4799354348989796
+            }
+          ],
+          "matched_fragment": "VENUS"
+        }
+      },
+      "collection_match": {
+        "name": "Concordia Venus",
+        "bgg_id": 256916,
+        "play_count": 1,
+        "last_played": "2025-11-26",
+        "user_rating": 7.0,
+        "image": "https://cf.geekdo-images.com/36WIe0ZHkp5OvHOlB-8vog__micro/img/7lY7AE0KsFAO2svml1DMpa20-kg=/fit-in/64x64/filters:strip_icc()/pic4356580.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_recent",
+      "color": "#42c352",
+      "label": "3mo ago (1 plays)"
+    },
+    {
+      "id": 4,
+      "polygon": [
+        [
+          848.2,
+          828.3
+        ],
+        [
+          1034.8,
+          839.5
+        ],
+        [
+          1039.5,
+          760.8
+        ],
+        [
+          852.9,
+          749.6
+        ]
+      ],
+      "confidence": 0.596,
+      "sam_score": 0.9095,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 5,
+      "polygon": [
+        [
+          1055.9,
+          684.3
+        ],
+        [
+          866.6,
+          678.0
+        ],
+        [
+          864.1,
+          753.4
+        ],
+        [
+          1053.4,
+          759.7
+        ]
+      ],
+      "confidence": 0.5909,
+      "sam_score": 0.9194,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 6,
+      "polygon": [
+        [
+          877.3,
+          675.8
+        ],
+        [
+          1031.4,
+          682.9
+        ],
+        [
+          1036.3,
+          577.6
+        ],
+        [
+          882.2,
+          570.5
+        ]
+      ],
+      "confidence": 0.5887,
+      "sam_score": 0.9299,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 7,
+      "polygon": [
+        [
+          1119.0,
+          1730.0
+        ],
+        [
+          1354.0,
+          1730.0
+        ],
+        [
+          1354.0,
+          1571.0
+        ],
+        [
+          1119.0,
+          1571.0
+        ]
+      ],
+      "confidence": 0.5807,
+      "sam_score": 0.9777,
+      "identification": {
+        "method": "clip",
+        "game_name": "The Red Cathedral",
+        "confidence": 0.3933,
+        "detail": {
+          "candidates": [
+            {
+              "name": "The Red Cathedral",
+              "score": 0.3933
+            },
+            {
+              "name": "Red7",
+              "score": 0.3708
+            },
+            {
+              "name": "Era: Medieval Age",
+              "score": 0.3232
+            },
+            {
+              "name": "Imperial Settlers",
+              "score": 0.3155
+            },
+            {
+              "name": "That Escalated Quickly",
+              "score": 0.3039
+            }
+          ]
+        }
+      },
+      "collection_match": {
+        "name": "The Red Cathedral",
+        "bgg_id": 227224,
+        "play_count": 1,
+        "last_played": "2022-07-31",
+        "user_rating": 7.2,
+        "image": "https://cf.geekdo-images.com/-PuiCnbxlBzMSjnUegp9AQ__micro/img/jpN4qTmj513YnRF7E5PEa43yuuk=/fit-in/64x64/filters:strip_icc()/pic5556025.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#e2a62b",
+      "label": "3yr 7mo ago (1 plays)"
+    },
+    {
+      "id": 8,
+      "polygon": [
+        [
+          1193.7,
+          1042.8
+        ],
+        [
+          1192.1,
+          1137.0
+        ],
+        [
+          1511.7,
+          1142.4
+        ],
+        [
+          1513.3,
+          1048.2
+        ]
+      ],
+      "confidence": 0.5762,
+      "sam_score": 0.9846,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 9,
+      "polygon": [
+        [
+          800.7,
+          1253.7
+        ],
+        [
+          1191.3,
+          1277.3
+        ],
+        [
+          1201.9,
+          1102.7
+        ],
+        [
+          811.3,
+          1079.1
+        ]
+      ],
+      "confidence": 0.5756,
+      "sam_score": 0.9876,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Arcs",
+        "confidence": 1.0,
+        "detail": {
+          "fragments": [
+            {
+              "text": "ARcs",
+              "confidence": 0.9679397344589233
+            },
+            {
+              "text": "THE BLIGHTED REACH",
+              "confidence": 0.855993917506786
+            },
+            {
+              "text": "EXrANSION",
+              "confidence": 0.5898415981821322
+            }
+          ],
+          "matched_fragment": "ARcs"
+        }
+      },
+      "collection_match": {
+        "name": "Arcs",
+        "bgg_id": 359871,
+        "play_count": 1,
+        "last_played": "2025-03-10",
+        "user_rating": 8.0,
+        "image": "https://cf.geekdo-images.com/XWImAu_3RK61wbzcKboVdA__micro/img/LqttudgwlhjRyem9gXvYuhVaZzA=/fit-in/64x64/filters:strip_icc()/pic8145530.png",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_1_2yr",
+      "color": "#72c046",
+      "label": "1yr 0mo ago (1 plays)"
+    },
+    {
+      "id": 10,
+      "polygon": [
+        [
+          539.5,
+          724.0
+        ],
+        [
+          807.1,
+          740.7
+        ],
+        [
+          811.9,
+          663.2
+        ],
+        [
+          544.3,
+          646.5
+        ]
+      ],
+      "confidence": 0.5747,
+      "sam_score": 0.9771,
+      "identification": {
+        "method": "clip_image",
+        "game_name": "Draftosaurus",
+        "confidence": 0.5242,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Draftosaurus",
+              "score": 0.5242
+            },
+            {
+              "name": "Gruff: Clash of the Battle Goats",
+              "score": 0.392
+            },
+            {
+              "name": "Kingsburg",
+              "score": 0.3855
+            },
+            {
+              "name": "BattleLore: Second Edition",
+              "score": 0.362
+            },
+            {
+              "name": "Stargrave: Science Fiction Wargames in the Ravaged Galaxy",
+              "score": 0.3582
+            }
+          ],
+          "z_score": 4.91
+        }
+      },
+      "collection_match": {
+        "name": "Draftosaurus",
+        "bgg_id": 264055,
+        "play_count": 7,
+        "last_played": "2021-05-24",
+        "user_rating": 8.0,
+        "image": "https://cf.geekdo-images.com/JahbLRZ_jEe8P8gisXUtJw__micro/img/Z33uV5AiJXyKbNw2gu69vWxKAeA=/fit-in/64x64/filters:strip_icc()/pic4447676.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#ed9030",
+      "label": "4yr 10mo ago (7 plays)"
+    },
+    {
+      "id": 11,
+      "polygon": [
+        [
+          995.3,
+          1368.9
+        ],
+        [
+          768.2,
+          1356.3
+        ],
+        [
+          763.4,
+          1442.5
+        ],
+        [
+          990.5,
+          1455.1
+        ]
+      ],
+      "confidence": 0.5684,
+      "sam_score": 0.9642,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Bärenpark",
+        "confidence": 1.0,
+        "detail": {
+          "fragments": [
+            {
+              "text": "PhIl WaLKER",
+              "confidence": 0.38837303309010285
+            },
+            {
+              "text": "HardIng",
+              "confidence": 0.33930945345163344
+            },
+            {
+              "text": "BARENPARK",
+              "confidence": 0.9984536151617103
+            }
+          ],
+          "matched_fragment": "BARENPARK"
+        }
+      },
+      "collection_match": {
+        "name": "Bärenpark",
+        "bgg_id": 219513,
+        "play_count": 4,
+        "last_played": "2021-05-29",
+        "user_rating": 7.8,
+        "image": "https://cf.geekdo-images.com/9JC16l1EMwmJkpbjaUBkpw__micro/img/4kDAm7tLUe-cIF3gM4g32_4Lbbw=/fit-in/64x64/filters:strip_icc()/pic3486218.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#ed9030",
+      "label": "4yr 10mo ago (4 plays)"
+    },
+    {
+      "id": 13,
+      "polygon": [
+        [
+          426.4,
+          640.4
+        ],
+        [
+          789.7,
+          659.1
+        ],
+        [
+          797.6,
+          505.6
+        ],
+        [
+          434.3,
+          486.9
+        ]
+      ],
+      "confidence": 0.5664,
+      "sam_score": 0.9521,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 14,
+      "polygon": [
+        [
+          488.3,
+          784.3
+        ],
+        [
+          793.8,
+          808.2
+        ],
+        [
+          799.1,
+          739.9
+        ],
+        [
+          493.6,
+          716.0
+        ]
+      ],
+      "confidence": 0.5661,
+      "sam_score": 0.9465,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Sidereal Confluence",
+        "confidence": 0.6415,
+        "detail": {
+          "fragments": [
+            {
+              "text": "SIDEREA  CONFLUENCE",
+              "confidence": 0.5475500660429298
+            },
+            {
+              "text": "BIFURCATION",
+              "confidence": 0.8237885327176518
+            },
+            {
+              "text": "Wizklds",
+              "confidence": 0.6334299917292088
+            }
+          ],
+          "full_text": "SIDEREA  CONFLUENCE BIFURCATION Wizklds"
+        }
+      },
+      "collection_match": {
+        "name": "Sidereal Confluence",
+        "bgg_id": 202426,
+        "play_count": 6,
+        "last_played": "2023-06-09",
+        "user_rating": 8.6,
+        "image": "https://cf.geekdo-images.com/3V1Nmee3P4qSpVmWO9uGgw__micro/img/FVFWOlgB6SvJaxAqQHB1h7VK_iM=/fit-in/64x64/filters:strip_icc()/pic4981297.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_2_3yr",
+      "color": "#d1b52b",
+      "label": "2yr 9mo ago (6 plays)"
+    },
+    {
+      "id": 15,
+      "polygon": [
+        [
+          1480.9,
+          1192.8
+        ],
+        [
+          1197.5,
+          1174.8
+        ],
+        [
+          1193.2,
+          1241.7
+        ],
+        [
+          1476.6,
+          1259.7
+        ]
+      ],
+      "confidence": 0.5565,
+      "sam_score": 0.9659,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Agricola (Revised Edition)",
+        "confidence": 0.8338,
+        "detail": {
+          "fragments": [
+            {
+              "text": "BxpansiON",
+              "confidence": 0.06394465133911445
+            },
+            {
+              "text": "FARMERS",
+              "confidence": 0.9972988782224957
+            },
+            {
+              "text": "chnies",
+              "confidence": 0.1046371915133947
+            },
+            {
+              "text": "AGRICOLA",
+              "confidence": 0.8836409944840427
+            },
+            {
+              "text": "MOOR",
+              "confidence": 0.9844880104064941
+            }
+          ],
+          "matched_fragment": "AGRICOLA"
+        }
+      },
+      "collection_match": {
+        "name": "Agricola (Revised Edition)",
+        "bgg_id": 200680,
+        "play_count": 13,
+        "last_played": "2019-07-30",
+        "user_rating": 9.5,
+        "image": "https://cf.geekdo-images.com/YCGWJMFwOI5efji2RJ2mSw__micro/img/GQNkMukGtKD2cVOgpUk4ZSmpUfA=/fit-in/64x64/filters:strip_icc()/pic8093340.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#f06c38",
+      "label": "6yr 7mo ago (13 plays)"
+    },
+    {
+      "id": 16,
+      "polygon": [
+        [
+          545.5,
+          657.1
+        ],
+        [
+          395.1,
+          643.4
+        ],
+        [
+          389.1,
+          709.4
+        ],
+        [
+          539.5,
+          723.1
+        ]
+      ],
+      "confidence": 0.5533,
+      "sam_score": 0.9541,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 17,
+      "polygon": [
+        [
+          1422.5,
+          1441.1
+        ],
+        [
+          1136.2,
+          1436.8
+        ],
+        [
+          1134.2,
+          1568.8
+        ],
+        [
+          1420.5,
+          1573.1
+        ]
+      ],
+      "confidence": 0.5482,
+      "sam_score": 0.9794,
+      "identification": {
+        "method": "clip",
+        "game_name": "Hallertau",
+        "confidence": 0.3647,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Hallertau",
+              "score": 0.3647
+            },
+            {
+              "name": "That Escalated Quickly",
+              "score": 0.2807
+            },
+            {
+              "name": "Bärenpark",
+              "score": 0.2793
+            },
+            {
+              "name": "Nidavellir",
+              "score": 0.2667
+            },
+            {
+              "name": "Start Player",
+              "score": 0.2623
+            }
+          ]
+        }
+      },
+      "collection_match": {
+        "name": "Hallertau",
+        "bgg_id": 300322,
+        "play_count": 2,
+        "last_played": "2022-07-15",
+        "user_rating": 8.61,
+        "image": "https://cf.geekdo-images.com/AdJBpY_o7PQEcoJPU1QdTg__micro/img/dBgvsB0sT2nFQRu78m4JJaxNZ5I=/fit-in/64x64/filters:strip_icc()/pic5869977.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#e3a52b",
+      "label": "3yr 8mo ago (2 plays)"
+    },
+    {
+      "id": 18,
+      "polygon": [
+        [
+          770.0,
+          1916.0
+        ],
+        [
+          770.0,
+          2047.0
+        ],
+        [
+          1016.0,
+          2047.0
+        ],
+        [
+          1016.0,
+          1916.0
+        ]
+      ],
+      "confidence": 0.5442,
+      "sam_score": 0.9811,
+      "identification": {
+        "method": "clip",
+        "game_name": "Ultimate Railroads",
+        "confidence": 0.3588,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Ultimate Railroads",
+              "score": 0.3588
+            },
+            {
+              "name": "Unfathomable",
+              "score": 0.2543
+            },
+            {
+              "name": "That Escalated Quickly",
+              "score": 0.2505
+            },
+            {
+              "name": "Watergate",
+              "score": 0.2431
+            },
+            {
+              "name": "Roll for the Galaxy",
+              "score": 0.2376
+            }
+          ]
+        }
+      },
+      "collection_match": {
+        "name": "Ultimate Railroads",
+        "bgg_id": 329591,
+        "play_count": 4,
+        "last_played": "2022-06-03",
+        "user_rating": 8.3,
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#e4a32c",
+      "label": "3yr 9mo ago (4 plays)"
+    },
+    {
+      "id": 19,
+      "polygon": [
+        [
+          1196.9,
+          1185.9
+        ],
+        [
+          1500.3,
+          1201.6
+        ],
+        [
+          1503.4,
+          1142.3
+        ],
+        [
+          1200.0,
+          1126.6
+        ]
+      ],
+      "confidence": 0.5413,
+      "sam_score": 0.9649,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 20,
+      "polygon": [
+        [
+          1451.0,
+          628.0
+        ],
+        [
+          1451.0,
+          858.0
+        ],
+        [
+          1541.0,
+          858.0
+        ],
+        [
+          1541.0,
+          628.0
+        ]
+      ],
+      "confidence": 0.541,
+      "sam_score": 0.9741,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 21,
+      "polygon": [
+        [
+          829.5,
+          570.0
+        ],
+        [
+          1241.5,
+          581.7
+        ],
+        [
+          1243.9,
+          497.1
+        ],
+        [
+          831.9,
+          485.4
+        ]
+      ],
+      "confidence": 0.536,
+      "sam_score": 0.9759,
+      "identification": {
+        "method": "ocr",
+        "game_name": "A War of Whispers",
+        "confidence": 0.7836,
+        "detail": {
+          "fragments": [
+            {
+              "text": "AWARQF",
+              "confidence": 0.7043798580968358
+            },
+            {
+              "text": "WHISPERS",
+              "confidence": 0.9066282718398552
+            },
+            {
+              "text": "GoLe EEMOk$ Prt key",
+              "confidence": 0.0004994918336685526
+            }
+          ],
+          "matched_fragment": "WHISPERS"
+        }
+      },
+      "collection_match": {
+        "name": "A War of Whispers",
+        "bgg_id": 253499,
+        "play_count": 2,
+        "last_played": "2022-11-13",
+        "user_rating": 7.8,
+        "image": "https://cf.geekdo-images.com/D3Fl15xiRd0QtghO0ZBiRA__micro/img/ltZGVFMUxd7lWgS-7ite2dxMS7c=/fit-in/64x64/filters:strip_icc()/pic4150994.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#dfac29",
+      "label": "3yr 4mo ago (2 plays)"
+    },
+    {
+      "id": 23,
+      "polygon": [
+        [
+          193.6,
+          720.6
+        ],
+        [
+          384.0,
+          727.9
+        ],
+        [
+          386.6,
+          660.7
+        ],
+        [
+          196.2,
+          653.4
+        ]
+      ],
+      "confidence": 0.5343,
+      "sam_score": 0.9814,
+      "identification": {
+        "method": "clip",
+        "game_name": "Mysterium Park",
+        "confidence": 0.3894,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Mysterium Park",
+              "score": 0.3894
+            },
+            {
+              "name": "Mysterium",
+              "score": 0.3202
+            },
+            {
+              "name": "Bärenpark",
+              "score": 0.2531
+            },
+            {
+              "name": "Super Dark",
+              "score": 0.2459
+            },
+            {
+              "name": "Tyrants of the Underdark",
+              "score": 0.2369
+            }
+          ]
+        }
+      },
+      "collection_match": {
+        "name": "Mysterium Park",
+        "bgg_id": 301767,
+        "play_count": 1,
+        "last_played": "2023-12-31",
+        "user_rating": 8.5,
+        "image": "https://cf.geekdo-images.com/U2CYPYgIEC1cLF45Rh0UGw__micro/img/KWnAt4LRvHbqZCbu_dvb3kMWdEQ=/fit-in/64x64/filters:strip_icc()/pic5581038.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_2_3yr",
+      "color": "#b2ba35",
+      "label": "2yr 2mo ago (1 plays)"
+    },
+    {
+      "id": 24,
+      "polygon": [
+        [
+          1226.7,
+          743.8
+        ],
+        [
+          1451.0,
+          765.4
+        ],
+        [
+          1457.2,
+          701.3
+        ],
+        [
+          1232.9,
+          679.7
+        ]
+      ],
+      "confidence": 0.5321,
+      "sam_score": 0.979,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 25,
+      "polygon": [
+        [
+          763.6,
+          1683.5
+        ],
+        [
+          1028.0,
+          1687.5
+        ],
+        [
+          1029.9,
+          1562.9
+        ],
+        [
+          765.5,
+          1558.9
+        ]
+      ],
+      "confidence": 0.53,
+      "sam_score": 0.9243,
+      "identification": {
+        "method": "clip",
+        "game_name": "Bonfire",
+        "confidence": 0.3658,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Bonfire",
+              "score": 0.3658
+            },
+            {
+              "name": "Monolith Arena",
+              "score": 0.2581
+            },
+            {
+              "name": "BattleCON: Fate of Indines",
+              "score": 0.2541
+            },
+            {
+              "name": "Dungeon Fighter",
+              "score": 0.2501
+            },
+            {
+              "name": "BattleLore: Second Edition",
+              "score": 0.2447
+            }
+          ]
+        }
+      },
+      "collection_match": {
+        "name": "Bonfire",
+        "bgg_id": 304420,
+        "play_count": 2,
+        "last_played": "2025-07-03",
+        "user_rating": 8.15,
+        "image": "https://cf.geekdo-images.com/q9sYvC0Tt-1mEiuKnVTS4w__micro/img/gk0JkM-ZFJ9NvUU0A9sYLToOCOA=/fit-in/64x64/filters:strip_icc()/pic5301335.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_6_12mo",
+      "color": "#5dc14b",
+      "label": "8mo ago (2 plays)"
+    },
+    {
+      "id": 26,
+      "polygon": [
+        [
+          196.7,
+          471.9
+        ],
+        [
+          -15.6,
+          610.4
+        ],
+        [
+          44.5,
+          702.6
+        ],
+        [
+          256.8,
+          564.1
+        ]
+      ],
+      "confidence": 0.5297,
+      "sam_score": 0.962,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Codenames: Duet",
+        "confidence": 0.9002,
+        "detail": {
+          "fragments": [
+            {
+              "text": "ce",
+              "confidence": 0.24349139675338713
+            },
+            {
+              "text": "CODENAMES",
+              "confidence": 0.999493534805826
+            },
+            {
+              "text": "~DUET",
+              "confidence": 0.25314289418217234
+            }
+          ],
+          "full_text": "ce CODENAMES ~DUET"
+        }
+      },
+      "collection_match": {
+        "name": "Codenames: Duet",
+        "bgg_id": 224037,
+        "play_count": 5,
+        "last_played": "2023-06-29",
+        "user_rating": 8.3,
+        "image": "https://cf.geekdo-images.com/VG31TvBpKngZ8ztV-N4Dcg__micro/img/OF_u4LLGDMec2-T_hdCsatcJj2o=/fit-in/64x64/filters:strip_icc()/pic8911183.png",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_2_3yr",
+      "color": "#ceb62c",
+      "label": "2yr 8mo ago (5 plays)"
+    },
+    {
+      "id": 27,
+      "polygon": [
+        [
+          739.0,
+          1925.0
+        ],
+        [
+          994.0,
+          1925.0
+        ],
+        [
+          994.0,
+          1820.0
+        ],
+        [
+          739.0,
+          1820.0
+        ]
+      ],
+      "confidence": 0.5259,
+      "sam_score": 0.9743,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 29,
+      "polygon": [
+        [
+          233.6,
+          578.3
+        ],
+        [
+          381.9,
+          583.9
+        ],
+        [
+          384.4,
+          516.6
+        ],
+        [
+          236.2,
+          511.0
+        ]
+      ],
+      "confidence": 0.5248,
+      "sam_score": 0.9764,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 30,
+      "polygon": [
+        [
+          389.0,
+          776.3
+        ],
+        [
+          488.7,
+          783.6
+        ],
+        [
+          493.5,
+          719.1
+        ],
+        [
+          393.7,
+          711.8
+        ]
+      ],
+      "confidence": 0.5238,
+      "sam_score": 0.9119,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 31,
+      "polygon": [
+        [
+          485.0,
+          1045.0
+        ],
+        [
+          787.0,
+          1045.0
+        ],
+        [
+          787.0,
+          942.0
+        ],
+        [
+          485.0,
+          942.0
+        ]
+      ],
+      "confidence": 0.5218,
+      "sam_score": 0.8798,
+      "identification": {
+        "method": "clip_image",
+        "game_name": "Woodcraft",
+        "confidence": 0.514,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Woodcraft",
+              "score": 0.514
+            },
+            {
+              "name": "Emberleaf",
+              "score": 0.3414
+            },
+            {
+              "name": "Gruff: Clash of the Battle Goats",
+              "score": 0.3326
+            },
+            {
+              "name": "Once Upon a Time: The Storytelling Card Game",
+              "score": 0.3275
+            },
+            {
+              "name": "Shadow Hunters",
+              "score": 0.324
+            }
+          ],
+          "z_score": 5.47
+        }
+      },
+      "collection_match": {
+        "name": "Woodcraft",
+        "bgg_id": 355093,
+        "play_count": 5,
+        "last_played": "2024-05-28",
+        "user_rating": 8.7,
+        "image": "https://cf.geekdo-images.com/S1_USNVBwzwidSpxAoKhuw__micro/img/8qjVWtUbYZJsoqmZU1i3WFCWxz0=/fit-in/64x64/filters:strip_icc()/pic6940296.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_1_2yr",
+      "color": "#9bbe3d",
+      "label": "1yr 10mo ago (5 plays)"
+    },
+    {
+      "id": 32,
+      "polygon": [
+        [
+          1255.0,
+          568.5
+        ],
+        [
+          1492.8,
+          588.2
+        ],
+        [
+          1497.8,
+          527.6
+        ],
+        [
+          1260.0,
+          507.9
+        ]
+      ],
+      "confidence": 0.5214,
+      "sam_score": 0.9546,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Targi",
+        "confidence": 1.0,
+        "detail": {
+          "fragments": [
+            {
+              "text": "TARGI",
+              "confidence": 0.9820328771310216
+            }
+          ],
+          "full_text": "TARGI"
+        }
+      },
+      "collection_match": {
+        "name": "Targi",
+        "bgg_id": 118048,
+        "play_count": 9,
+        "last_played": "2022-08-01",
+        "user_rating": 8.2,
+        "image": "https://cf.geekdo-images.com/wHg4fOf48cs1kw1PDOk1tQ__micro/img/I3v-kbkcehXvBeP_3-qbaW9U8co=/fit-in/64x64/filters:strip_icc()/pic3958793.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#e2a62b",
+      "label": "3yr 7mo ago (9 plays)"
+    },
+    {
+      "id": 33,
+      "polygon": [
+        [
+          436.6,
+          943.1
+        ],
+        [
+          586.4,
+          939.7
+        ],
+        [
+          584.2,
+          843.5
+        ],
+        [
+          434.4,
+          846.9
+        ]
+      ],
+      "confidence": 0.5145,
+      "sam_score": 0.9101,
+      "identification": {
+        "method": "clip_image",
+        "game_name": "Mountain Goats",
+        "confidence": 0.761,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Mountain Goats",
+              "score": 0.761
+            },
+            {
+              "name": "Aeon Trespass: Odyssey",
+              "score": 0.4367
+            },
+            {
+              "name": "On Mars",
+              "score": 0.4331
+            },
+            {
+              "name": "Lords of Vegas",
+              "score": 0.4205
+            },
+            {
+              "name": "Dungeon Lords",
+              "score": 0.4049
+            }
+          ],
+          "z_score": 7.98
+        }
+      },
+      "collection_match": {
+        "name": "Mountain Goats",
+        "bgg_id": 63975,
+        "play_count": 4,
+        "last_played": "2024-08-27",
+        "user_rating": 7.0,
+        "image": "https://cf.geekdo-images.com/p4DD5TGFNFQy_ayFtT-x_A__micro/img/DzgRdqUh0eVoX0wR5jBx1zHbnI0=/fit-in/64x64/filters:strip_icc()/pic5313595.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_1_2yr",
+      "color": "#8fbe3f",
+      "label": "1yr 6mo ago (4 plays)"
+    },
+    {
+      "id": 34,
+      "polygon": [
+        [
+          115.1,
+          776.6
+        ],
+        [
+          380.6,
+          796.1
+        ],
+        [
+          385.4,
+          730.3
+        ],
+        [
+          119.9,
+          710.8
+        ]
+      ],
+      "confidence": 0.5091,
+      "sam_score": 0.9684,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 36,
+      "polygon": [
+        [
+          749.7,
+          1750.4
+        ],
+        [
+          1033.2,
+          1755.0
+        ],
+        [
+          1034.3,
+          1685.7
+        ],
+        [
+          750.8,
+          1681.1
+        ]
+      ],
+      "confidence": 0.5072,
+      "sam_score": 0.9525,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 37,
+      "polygon": [
+        [
+          773.0,
+          1291.9
+        ],
+        [
+          767.4,
+          1356.4
+        ],
+        [
+          988.1,
+          1375.6
+        ],
+        [
+          993.7,
+          1311.1
+        ]
+      ],
+      "confidence": 0.5069,
+      "sam_score": 0.9431,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Forest Shuffle",
+        "confidence": 1.0,
+        "detail": {
+          "fragments": [
+            {
+              "text": "FOREST",
+              "confidence": 0.9823059856687365
+            },
+            {
+              "text": "ShUFFLe",
+              "confidence": 0.4785016313968357
+            }
+          ],
+          "full_text": "FOREST ShUFFLe"
+        }
+      },
+      "collection_match": {
+        "name": "Forest Shuffle",
+        "bgg_id": 391163,
+        "play_count": 3,
+        "last_played": "2024-05-28",
+        "user_rating": 7.8,
+        "image": "https://cf.geekdo-images.com/08bC8NviSTNc4Zvur4pueA__micro/img/2zpIh1Kem-P0ln1_ZnQVnxg5awE=/fit-in/64x64/filters:strip_icc()/pic7578350.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_1_2yr",
+      "color": "#9bbe3d",
+      "label": "1yr 10mo ago (3 plays)"
+    },
+    {
+      "id": 39,
+      "polygon": [
+        [
+          48.1,
+          1719.6
+        ],
+        [
+          390.9,
+          1755.6
+        ],
+        [
+          400.0,
+          1668.6
+        ],
+        [
+          57.2,
+          1632.6
+        ]
+      ],
+      "confidence": 0.5009,
+      "sam_score": 0.9356,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Civilization: A New Dawn",
+        "confidence": 0.9156,
+        "detail": {
+          "fragments": [
+            {
+              "text": "CIVILIZATION",
+              "confidence": 0.7300327074261928
+            },
+            {
+              "text": "NEW",
+              "confidence": 0.6740720827022961
+            },
+            {
+              "text": "DAWN",
+              "confidence": 0.9944357872009277
+            }
+          ],
+          "full_text": "CIVILIZATION NEW DAWN"
+        }
+      },
+      "collection_match": {
+        "name": "Civilization: A New Dawn",
+        "bgg_id": 233247,
+        "play_count": 3,
+        "last_played": "2022-01-02",
+        "user_rating": 7.7,
+        "image": "https://cf.geekdo-images.com/S0GM2Mxfh8Tmvsdeog0W0g__micro/img/oDSuvV6D4hH8wP_ytSbled5-PnA=/fit-in/64x64/filters:strip_icc()/pic3764168.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#e89b2e",
+      "label": "4yr 2mo ago (3 plays)"
+    },
+    {
+      "id": 41,
+      "polygon": [
+        [
+          180.8,
+          653.4
+        ],
+        [
+          382.3,
+          660.5
+        ],
+        [
+          385.1,
+          581.7
+        ],
+        [
+          183.6,
+          574.6
+        ]
+      ],
+      "confidence": 0.4984,
+      "sam_score": 0.9827,
+      "identification": {
+        "method": "clip_image",
+        "game_name": "So Clover!",
+        "confidence": 0.62,
+        "detail": {
+          "candidates": [
+            {
+              "name": "So Clover!",
+              "score": 0.62
+            },
+            {
+              "name": "Sushi Go!",
+              "score": 0.4208
+            },
+            {
+              "name": "Gruff: Clash of the Battle Goats",
+              "score": 0.417
+            },
+            {
+              "name": "Mega Man Pixel Tactics: Bass Orange",
+              "score": 0.4023
+            },
+            {
+              "name": "Consentacle",
+              "score": 0.3969
+            }
+          ],
+          "z_score": 6.25
+        }
+      },
+      "collection_match": {
+        "name": "So Clover!",
+        "bgg_id": 329839,
+        "play_count": 25,
+        "last_played": "2023-10-16",
+        "user_rating": 8.6,
+        "image": "https://cf.geekdo-images.com/8oipK9-ivkn53h7L5U2Yfg__micro/img/V0YAH4DEyFKHjMsrHmyUwhzmKiw=/fit-in/64x64/filters:strip_icc()/pic6588069.png",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_2_3yr",
+      "color": "#beb831",
+      "label": "2yr 5mo ago (25 plays)"
+    },
+    {
+      "id": 42,
+      "polygon": [
+        [
+          384.2,
+          1562.0
+        ],
+        [
+          86.9,
+          1543.8
+        ],
+        [
+          80.5,
+          1648.1
+        ],
+        [
+          377.8,
+          1666.3
+        ]
+      ],
+      "confidence": 0.4938,
+      "sam_score": 0.9219,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Knight Fall",
+        "confidence": 0.6585,
+        "detail": {
+          "fragments": [
+            {
+              "text": "Knightfal",
+              "confidence": 0.6251357456140227
+            }
+          ],
+          "full_text": "Knightfal"
+        }
+      },
+      "collection_match": {
+        "name": "Knight Fall",
+        "bgg_id": 364541,
+        "play_count": 2,
+        "last_played": "2022-12-10",
+        "user_rating": 8.0,
+        "image": "https://cf.geekdo-images.com/MMvLbZsURMVbXl_Utn0mSA__micro/img/Gi7G0rjLrGruR-6IejbJnGK2060=/fit-in/64x64/filters:strip_icc()/pic6905754.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#dfad29",
+      "label": "3yr 3mo ago (2 plays)"
+    },
+    {
+      "id": 43,
+      "polygon": [
+        [
+          1153.3,
+          1362.8
+        ],
+        [
+          1432.2,
+          1370.6
+        ],
+        [
+          1435.5,
+          1252.6
+        ],
+        [
+          1156.6,
+          1244.8
+        ]
+      ],
+      "confidence": 0.484,
+      "sam_score": 0.9706,
+      "identification": {
+        "method": "clip",
+        "game_name": "Fields of Arle",
+        "confidence": 0.3682,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Fields of Arle",
+              "score": 0.3682
+            },
+            {
+              "name": "Arcs",
+              "score": 0.2762
+            },
+            {
+              "name": "Summoner Wars: Phoenix Elves vs Tundra Orcs",
+              "score": 0.2546
+            },
+            {
+              "name": "That Escalated Quickly",
+              "score": 0.2541
+            },
+            {
+              "name": "Aeon Trespass: Twelve Sins of Herakles – Summer",
+              "score": 0.2463
+            }
+          ]
+        }
+      },
+      "collection_match": {
+        "name": "Fields of Arle",
+        "bgg_id": 159675,
+        "play_count": 3,
+        "last_played": "2023-09-22",
+        "user_rating": 9.4,
+        "image": "https://cf.geekdo-images.com/0w8go6cfvlpgJKydHUkDtA__micro/img/9JEU9pIfwl2wUIE3fmCmjjH_iiM=/fit-in/64x64/filters:strip_icc()/pic2225968.png",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_2_3yr",
+      "color": "#c2b830",
+      "label": "2yr 6mo ago (3 plays)"
+    },
+    {
+      "id": 44,
+      "polygon": [
+        [
+          416.0,
+          1825.0
+        ],
+        [
+          416.0,
+          1922.0
+        ],
+        [
+          666.0,
+          1922.0
+        ],
+        [
+          666.0,
+          1825.0
+        ]
+      ],
+      "confidence": 0.4752,
+      "sam_score": 0.9733,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Sekigahara: The Unification of Japan",
+        "confidence": 0.6488,
+        "detail": {
+          "fragments": [
+            {
+              "text": "SckIGAHARA",
+              "confidence": 0.6736603078016388
+            },
+            {
+              "text": "THE UNIFICATION OF _IAPAN",
+              "confidence": 0.33393065532038335
+            }
+          ],
+          "full_text": "SckIGAHARA THE UNIFICATION OF _IAPAN"
+        }
+      },
+      "collection_match": {
+        "name": "Sekigahara: The Unification of Japan",
+        "bgg_id": 25021,
+        "play_count": 1,
+        "last_played": "2017-10-13",
+        "user_rating": 7.4,
+        "image": "https://cf.geekdo-images.com/eMJAona-uXwh6t2AcugGEg__micro/img/IbGLMnQuMlEBC2TONqvtLHbEzP8=/fit-in/64x64/filters:strip_icc()/pic1063508.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#ec523a",
+      "label": "8yr 5mo ago (1 plays)"
+    },
+    {
+      "id": 45,
+      "polygon": [
+        [
+          741.2,
+          1809.8
+        ],
+        [
+          971.4,
+          1822.0
+        ],
+        [
+          974.9,
+          1755.6
+        ],
+        [
+          744.7,
+          1743.4
+        ]
+      ],
+      "confidence": 0.4719,
+      "sam_score": 0.9353,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 46,
+      "polygon": [
+        [
+          1212.2,
+          850.1
+        ],
+        [
+          1447.6,
+          869.7
+        ],
+        [
+          1451.6,
+          822.0
+        ],
+        [
+          1216.2,
+          802.4
+        ]
+      ],
+      "confidence": 0.4648,
+      "sam_score": 0.9549,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Caverna: Cave vs Cave",
+        "confidence": 0.7703,
+        "detail": {
+          "fragments": [
+            {
+              "text": "@Derna",
+              "confidence": 0.6163597778787987
+            },
+            {
+              "text": "ERA",
+              "confidence": 0.9995737757544029
+            },
+            {
+              "text": "GAvE_JII",
+              "confidence": 0.10982168720757347
+            },
+            {
+              "text": "CAVE",
+              "confidence": 0.9337181174433327
+            }
+          ],
+          "matched_fragment": "CAVE"
+        }
+      },
+      "collection_match": {
+        "name": "Caverna: Cave vs Cave",
+        "bgg_id": 220520,
+        "play_count": 7,
+        "last_played": "2023-06-09",
+        "user_rating": 8.9,
+        "image": "https://cf.geekdo-images.com/rTlJoKU2lHOZfv1Ad8YvDA__micro/img/re38b_b6qjgiwLqpNgk2Q7unCqs=/fit-in/64x64/filters:strip_icc()/pic3505750.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_2_3yr",
+      "color": "#d1b52b",
+      "label": "2yr 9mo ago (7 plays)"
+    },
+    {
+      "id": 47,
+      "polygon": [
+        [
+          1281.8,
+          509.0
+        ],
+        [
+          1509.7,
+          525.3
+        ],
+        [
+          1513.9,
+          466.4
+        ],
+        [
+          1286.0,
+          450.1
+        ]
+      ],
+      "confidence": 0.4631,
+      "sam_score": 0.9661,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Bohnanza",
+        "confidence": 1.0,
+        "detail": {
+          "fragments": [
+            {
+              "text": "BoHNANZA",
+              "confidence": 0.6131899084263256
+            }
+          ],
+          "full_text": "BoHNANZA"
+        }
+      },
+      "collection_match": {
+        "name": "Bohnanza",
+        "bgg_id": 11,
+        "play_count": 20,
+        "last_played": "2015-03-26",
+        "user_rating": 9.1,
+        "image": "https://cf.geekdo-images.com/8SADtu_4zBH_UJrCo935Iw__micro/img/h7UKVnxQf4sFlRKTreI4s9LjpGM=/fit-in/64x64/filters:strip_icc()/pic6348964.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#e03a34",
+      "label": "11yr 0mo ago (20 plays)"
+    },
+    {
+      "id": 48,
+      "polygon": [
+        [
+          392.9,
+          954.2
+        ],
+        [
+          398.4,
+          1039.6
+        ],
+        [
+          485.8,
+          1034.0
+        ],
+        [
+          480.3,
+          948.6
+        ]
+      ],
+      "confidence": 0.4569,
+      "sam_score": 0.9418,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 52,
+      "polygon": [
+        [
+          368.1,
+          1298.2
+        ],
+        [
+          63.3,
+          1274.1
+        ],
+        [
+          57.5,
+          1347.5
+        ],
+        [
+          362.3,
+          1371.6
+        ]
+      ],
+      "confidence": 0.4521,
+      "sam_score": 0.8833,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 53,
+      "polygon": [
+        [
+          397.8,
+          1755.1
+        ],
+        [
+          737.2,
+          1760.2
+        ],
+        [
+          739.2,
+          1628.0
+        ],
+        [
+          399.8,
+          1622.9
+        ]
+      ],
+      "confidence": 0.4493,
+      "sam_score": 0.9745,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Shards of Infinity: Saga Collection",
+        "confidence": 0.9183,
+        "detail": {
+          "fragments": [
+            {
+              "text": "SHARDS",
+              "confidence": 0.9753862383651077
+            },
+            {
+              "text": "INFINITY",
+              "confidence": 0.842918149969384
+            },
+            {
+              "text": "SAGA colLecTION",
+              "confidence": 0.36891389372749805
+            },
+            {
+              "text": "EL",
+              "confidence": 0.9892489077655556
+            }
+          ],
+          "full_text": "SHARDS INFINITY SAGA colLecTION EL"
+        }
+      },
+      "collection_match": {
+        "name": "Shards of Infinity: Saga Collection",
+        "bgg_id": 393871,
+        "play_count": 0,
+        "last_played": null,
+        "user_rating": null,
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "never_played",
+      "color": "#e839a0",
+      "label": "Never played"
+    },
+    {
+      "id": 54,
+      "polygon": [
+        [
+          1417.4,
+          1649.0
+        ],
+        [
+          1071.9,
+          1655.7
+        ],
+        [
+          1075.2,
+          1824.4
+        ],
+        [
+          1420.7,
+          1817.7
+        ]
+      ],
+      "confidence": 0.4464,
+      "sam_score": 0.9493,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 55,
+      "polygon": [
+        [
+          36.2,
+          1211.9
+        ],
+        [
+          242.6,
+          1226.9
+        ],
+        [
+          246.6,
+          1171.3
+        ],
+        [
+          40.2,
+          1156.3
+        ]
+      ],
+      "confidence": 0.4449,
+      "sam_score": 0.9269,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 56,
+      "polygon": [
+        [
+          33.7,
+          769.8
+        ],
+        [
+          115.4,
+          775.3
+        ],
+        [
+          118.0,
+          736.6
+        ],
+        [
+          36.3,
+          731.1
+        ]
+      ],
+      "confidence": 0.4443,
+      "sam_score": 0.9521,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 57,
+      "polygon": [
+        [
+          415.2,
+          1756.6
+        ],
+        [
+          414.5,
+          1827.8
+        ],
+        [
+          667.5,
+          1830.3
+        ],
+        [
+          668.2,
+          1759.1
+        ]
+      ],
+      "confidence": 0.4435,
+      "sam_score": 0.9748,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 58,
+      "polygon": [
+        [
+          218.0,
+          810.0
+        ],
+        [
+          64.0,
+          889.1
+        ],
+        [
+          119.8,
+          997.7
+        ],
+        [
+          273.8,
+          918.6
+        ]
+      ],
+      "confidence": 0.4406,
+      "sam_score": 0.9396,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 59,
+      "polygon": [
+        [
+          285.8,
+          1811.8
+        ],
+        [
+          267.0,
+          1986.6
+        ],
+        [
+          360.9,
+          1996.7
+        ],
+        [
+          379.7,
+          1821.9
+        ]
+      ],
+      "confidence": 0.4384,
+      "sam_score": 0.9523,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 60,
+      "polygon": [
+        [
+          744.8,
+          1536.2
+        ],
+        [
+          420.2,
+          1527.5
+        ],
+        [
+          417.5,
+          1627.1
+        ],
+        [
+          742.1,
+          1635.8
+        ]
+      ],
+      "confidence": 0.4365,
+      "sam_score": 0.9694,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 61,
+      "polygon": [
+        [
+          761.1,
+          1315.3
+        ],
+        [
+          612.8,
+          1323.6
+        ],
+        [
+          616.0,
+          1381.4
+        ],
+        [
+          764.3,
+          1373.1
+        ]
+      ],
+      "confidence": 0.435,
+      "sam_score": 0.9181,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 62,
+      "polygon": [
+        [
+          -2.6,
+          1154.2
+        ],
+        [
+          239.9,
+          1160.9
+        ],
+        [
+          243.5,
+          1029.5
+        ],
+        [
+          1.0,
+          1022.8
+        ]
+      ],
+      "confidence": 0.4314,
+      "sam_score": 0.9082,
+      "identification": {
+        "method": "clip",
+        "game_name": "Decrypto",
+        "confidence": 0.3801,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Decrypto",
+              "score": 0.3801
+            },
+            {
+              "name": "Cerebria: The Inside World",
+              "score": 0.295
+            },
+            {
+              "name": "Watergate",
+              "score": 0.2945
+            },
+            {
+              "name": "Sekigahara: The Unification of Japan",
+              "score": 0.2798
+            },
+            {
+              "name": "Labyrinth: The War on Terror, 2001 – ?",
+              "score": 0.2702
+            }
+          ]
+        }
+      },
+      "collection_match": {
+        "name": "Decrypto",
+        "bgg_id": 225694,
+        "play_count": 2,
+        "last_played": "2021-05-24",
+        "user_rating": 9.0,
+        "image": "https://cf.geekdo-images.com/hHZWXnUTMYDd_KTAM6Jwlw__micro/img/g7DQGNNf6ZFwYDGpe9kT3e4KELY=/fit-in/64x64/filters:strip_icc()/pic3759421.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#ed9030",
+      "label": "4yr 10mo ago (2 plays)"
+    },
+    {
+      "id": 63,
+      "polygon": [
+        [
+          420.3,
+          1100.4
+        ],
+        [
+          416.0,
+          1183.7
+        ],
+        [
+          708.4,
+          1198.8
+        ],
+        [
+          712.7,
+          1115.5
+        ]
+      ],
+      "confidence": 0.431,
+      "sam_score": 0.9452,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 64,
+      "polygon": [
+        [
+          512.1,
+          1508.0
+        ],
+        [
+          720.3,
+          1531.1
+        ],
+        [
+          731.0,
+          1434.3
+        ],
+        [
+          522.8,
+          1411.2
+        ]
+      ],
+      "confidence": 0.4293,
+      "sam_score": 0.9041,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 65,
+      "polygon": [
+        [
+          1030.3,
+          1552.1
+        ],
+        [
+          764.9,
+          1540.6
+        ],
+        [
+          762.4,
+          1599.4
+        ],
+        [
+          1027.8,
+          1610.9
+        ]
+      ],
+      "confidence": 0.4241,
+      "sam_score": 0.9401,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 66,
+      "polygon": [
+        [
+          1044.6,
+          1964.0
+        ],
+        [
+          1323.3,
+          2018.9
+        ],
+        [
+          1359.6,
+          1834.8
+        ],
+        [
+          1080.9,
+          1779.9
+        ]
+      ],
+      "confidence": 0.4214,
+      "sam_score": 0.9701,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Rear Window",
+        "confidence": 0.7544,
+        "detail": {
+          "fragments": [
+            {
+              "text": "@ic",
+              "confidence": 0.5950949748310077
+            },
+            {
+              "text": "REAR",
+              "confidence": 0.9998147487640381
+            },
+            {
+              "text": "WINDOW",
+              "confidence": 0.7686259214310985
+            }
+          ],
+          "full_text": "@ic REAR WINDOW"
+        }
+      },
+      "collection_match": {
+        "name": "Rear Window",
+        "bgg_id": 358816,
+        "play_count": 2,
+        "last_played": "2022-11-13",
+        "user_rating": 8.2,
+        "image": "https://cf.geekdo-images.com/GyMVRe5N2fqzW20820Wgkg__micro/img/NiVanUtP5obMTVkIZhfrMxLK5aY=/fit-in/64x64/filters:strip_icc()/pic6743744.png",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#dfac29",
+      "label": "3yr 4mo ago (2 plays)"
+    },
+    {
+      "id": 67,
+      "polygon": [
+        [
+          421.0,
+          1922.0
+        ],
+        [
+          421.0,
+          1955.0
+        ],
+        [
+          665.0,
+          1955.0
+        ],
+        [
+          665.0,
+          1922.0
+        ]
+      ],
+      "confidence": 0.4211,
+      "sam_score": 0.9374,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Talon",
+        "confidence": 0.6012,
+        "detail": {
+          "fragments": [
+            {
+              "text": "TALONIWW@",
+              "confidence": 0.09815802943285377
+            },
+            {
+              "text": "GMI",
+              "confidence": 0.32725465297698975
+            }
+          ],
+          "full_text": "TALONIWW@ GMI"
+        }
+      },
+      "collection_match": {
+        "name": "Talon",
+        "bgg_id": 145976,
+        "play_count": 2,
+        "last_played": "2021-11-01",
+        "user_rating": 8.4,
+        "image": "https://cf.geekdo-images.com/68_Ad3fxfpkxrvF6pNMs8A__micro/img/dRASGvvUIbqgiPzfAOtb23GOkpU=/fit-in/64x64/filters:strip_icc()/pic8382750.png",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#ea972f",
+      "label": "4yr 4mo ago (2 plays)"
+    },
+    {
+      "id": 68,
+      "polygon": [
+        [
+          792.6,
+          391.4
+        ],
+        [
+          455.2,
+          379.2
+        ],
+        [
+          451.2,
+          490.3
+        ],
+        [
+          788.6,
+          502.5
+        ]
+      ],
+      "confidence": 0.4198,
+      "sam_score": 0.9846,
+      "identification": {
+        "method": "clip",
+        "game_name": "Leviathan Wilds",
+        "confidence": 0.353,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Leviathan Wilds",
+              "score": 0.353
+            },
+            {
+              "name": "Mythic Battles: Pantheon",
+              "score": 0.2721
+            },
+            {
+              "name": "Millennium Blades",
+              "score": 0.2337
+            },
+            {
+              "name": "Gaslands: Post-Apocalyptic Vehicular Combat",
+              "score": 0.2335
+            },
+            {
+              "name": "Mythic Battles: Isfet",
+              "score": 0.2326
+            }
+          ]
+        }
+      },
+      "collection_match": {
+        "name": "Leviathan Wilds",
+        "bgg_id": 358737,
+        "play_count": 6,
+        "last_played": "2025-03-10",
+        "user_rating": 9.5,
+        "image": "https://cf.geekdo-images.com/k_iHhr7ltGhj46u4oQ4YAQ__micro/img/vkLhzUsPyXX9f1lb2j0v8i5OO7I=/fit-in/64x64/filters:strip_icc()/pic7976770.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_1_2yr",
+      "color": "#72c046",
+      "label": "1yr 0mo ago (6 plays)"
+    },
+    {
+      "id": 71,
+      "polygon": [
+        [
+          749.3,
+          1375.6
+        ],
+        [
+          601.6,
+          1352.1
+        ],
+        [
+          590.8,
+          1420.4
+        ],
+        [
+          738.4,
+          1443.9
+        ]
+      ],
+      "confidence": 0.411,
+      "sam_score": 0.9486,
+      "identification": {
+        "method": "clip",
+        "game_name": "Worldbreakers: Advent of the Khanate",
+        "confidence": 0.3772,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Worldbreakers: Advent of the Khanate",
+              "score": 0.3772
+            },
+            {
+              "name": "Merchants &amp; Marauders",
+              "score": 0.2424
+            },
+            {
+              "name": "Wyrmspan",
+              "score": 0.229
+            },
+            {
+              "name": "Warhammer 40,000 (Third Edition)",
+              "score": 0.2271
+            },
+            {
+              "name": "Werewords",
+              "score": 0.2237
+            }
+          ]
+        }
+      },
+      "collection_match": {
+        "name": "Worldbreakers: Advent of the Khanate",
+        "bgg_id": 351991,
+        "play_count": 1,
+        "last_played": "2026-01-28",
+        "user_rating": 8.0,
+        "image": "https://cf.geekdo-images.com/1GBdCIXuJj_FyktUxgHprw__micro/img/Lm7LPZLlY6885rbLyJdQ0RRuX0E=/fit-in/64x64/filters:strip_icc()/pic6535595.png",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_recent",
+      "color": "#38c356",
+      "label": "1mo ago (1 plays)"
+    },
+    {
+      "id": 72,
+      "polygon": [
+        [
+          1238.3,
+          680.2
+        ],
+        [
+          1451.0,
+          700.7
+        ],
+        [
+          1455.9,
+          650.3
+        ],
+        [
+          1243.2,
+          629.8
+        ]
+      ],
+      "confidence": 0.4093,
+      "sam_score": 0.954,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 73,
+      "polygon": [
+        [
+          1133.3,
+          1435.2
+        ],
+        [
+          1407.0,
+          1447.1
+        ],
+        [
+          1408.6,
+          1409.6
+        ],
+        [
+          1134.9,
+          1397.7
+        ]
+      ],
+      "confidence": 0.4072,
+      "sam_score": 0.9265,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 74,
+      "polygon": [
+        [
+          66.2,
+          1439.0
+        ],
+        [
+          288.8,
+          1470.6
+        ],
+        [
+          296.6,
+          1415.4
+        ],
+        [
+          74.0,
+          1383.8
+        ]
+      ],
+      "confidence": 0.4056,
+      "sam_score": 0.9725,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Spyfall",
+        "confidence": 0.6546,
+        "detail": {
+          "fragments": [
+            {
+              "text": "SPYFNL",
+              "confidence": 0.396526802192652
+            }
+          ],
+          "full_text": "SPYFNL"
+        }
+      },
+      "collection_match": {
+        "name": "Spyfall",
+        "bgg_id": 166384,
+        "play_count": 55,
+        "last_played": "2015-10-15",
+        "user_rating": 9.0,
+        "image": "https://cf.geekdo-images.com/Ehx72XRdSeQHISVXcZVnHg__micro/img/ldZfZ5bQAIYKfHSjWxBzj5uIpWg=/fit-in/64x64/filters:strip_icc()/pic2453926.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#e23f35",
+      "label": "10yr 5mo ago (55 plays)"
+    },
+    {
+      "id": 75,
+      "polygon": [
+        [
+          668.3,
+          1822.8
+        ],
+        [
+          662.2,
+          2046.9
+        ],
+        [
+          726.1,
+          2048.6
+        ],
+        [
+          732.2,
+          1824.5
+        ]
+      ],
+      "confidence": 0.4053,
+      "sam_score": 0.9361,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 76,
+      "polygon": [
+        [
+          287.3,
+          1365.6
+        ],
+        [
+          65.6,
+          1348.0
+        ],
+        [
+          61.7,
+          1397.0
+        ],
+        [
+          283.4,
+          1414.6
+        ]
+      ],
+      "confidence": 0.3983,
+      "sam_score": 0.9234,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 77,
+      "polygon": [
+        [
+          399.4,
+          841.0
+        ],
+        [
+          393.5,
+          938.1
+        ],
+        [
+          473.9,
+          943.0
+        ],
+        [
+          479.8,
+          845.9
+        ]
+      ],
+      "confidence": 0.3951,
+      "sam_score": 0.763,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 78,
+      "polygon": [
+        [
+          76.4,
+          1768.8
+        ],
+        [
+          271.5,
+          1792.7
+        ],
+        [
+          277.5,
+          1743.7
+        ],
+        [
+          82.4,
+          1719.8
+        ]
+      ],
+      "confidence": 0.3936,
+      "sam_score": 0.9416,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 80,
+      "polygon": [
+        [
+          1415.4,
+          1370.1
+        ],
+        [
+          1139.4,
+          1362.4
+        ],
+        [
+          1137.6,
+          1425.7
+        ],
+        [
+          1413.6,
+          1433.4
+        ]
+      ],
+      "confidence": 0.3868,
+      "sam_score": 0.9611,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 81,
+      "polygon": [
+        [
+          350.8,
+          922.0
+        ],
+        [
+          356.4,
+          1012.6
+        ],
+        [
+          388.7,
+          1010.6
+        ],
+        [
+          383.1,
+          920.0
+        ]
+      ],
+      "confidence": 0.386,
+      "sam_score": 0.8877,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 82,
+      "polygon": [
+        [
+          770.8,
+          1048.1
+        ],
+        [
+          526.6,
+          1044.4
+        ],
+        [
+          525.6,
+          1111.1
+        ],
+        [
+          769.8,
+          1114.8
+        ]
+      ],
+      "confidence": 0.3833,
+      "sam_score": 0.9664,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 84,
+      "polygon": [
+        [
+          64.3,
+          889.7
+        ],
+        [
+          -51.9,
+          955.3
+        ],
+        [
+          7.7,
+          1060.8
+        ],
+        [
+          123.9,
+          995.2
+        ]
+      ],
+      "confidence": 0.3759,
+      "sam_score": 0.9544,
+      "identification": {
+        "method": "clip_image",
+        "game_name": "Black Rose Wars: Rebirth",
+        "confidence": 0.5494,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Black Rose Wars: Rebirth",
+              "score": 0.5494
+            },
+            {
+              "name": "The Lord of the Rings: The Fellowship of the Ring – Trick-Taking Game",
+              "score": 0.4819
+            },
+            {
+              "name": "Good Cop Bad Cop",
+              "score": 0.4779
+            },
+            {
+              "name": "Kiri-ai: The Duel",
+              "score": 0.4737
+            },
+            {
+              "name": "Kingdom Death: Monster",
+              "score": 0.4727
+            }
+          ],
+          "z_score": 3.64
+        }
+      },
+      "collection_match": {
+        "name": "Black Rose Wars: Rebirth",
+        "bgg_id": 342444,
+        "play_count": 1,
+        "last_played": "2025-08-16",
+        "user_rating": null,
+        "image": "https://cf.geekdo-images.com/cwQZOU3cNOTta6nuT77byg__micro/img/jgLHO3GF8jliuS-mvs1lcOfUxHE=/fit-in/64x64/filters:strip_icc()/pic6279361.png",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_6_12mo",
+      "color": "#54c24d",
+      "label": "7mo ago (1 plays)"
+    },
+    {
+      "id": 85,
+      "polygon": [
+        [
+          276.1,
+          1906.6
+        ],
+        [
+          120.8,
+          1895.5
+        ],
+        [
+          115.0,
+          1976.6
+        ],
+        [
+          270.3,
+          1987.7
+        ]
+      ],
+      "confidence": 0.3689,
+      "sam_score": 0.9442,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 87,
+      "polygon": [
+        [
+          235.8,
+          1260.1
+        ],
+        [
+          373.9,
+          1252.1
+        ],
+        [
+          370.0,
+          1185.1
+        ],
+        [
+          231.9,
+          1193.1
+        ]
+      ],
+      "confidence": 0.3665,
+      "sam_score": 0.9228,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 88,
+      "polygon": [
+        [
+          1530.3,
+          288.4
+        ],
+        [
+          1286.4,
+          267.3
+        ],
+        [
+          1275.5,
+          393.0
+        ],
+        [
+          1519.4,
+          414.1
+        ]
+      ],
+      "confidence": 0.3655,
+      "sam_score": 0.9665,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 89,
+      "polygon": [
+        [
+          420.0,
+          2047.0
+        ],
+        [
+          664.0,
+          2047.0
+        ],
+        [
+          664.0,
+          2007.0
+        ],
+        [
+          420.0,
+          2007.0
+        ]
+      ],
+      "confidence": 0.3653,
+      "sam_score": 0.9831,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 90,
+      "polygon": [
+        [
+          383.3,
+          1103.9
+        ],
+        [
+          215.8,
+          1099.2
+        ],
+        [
+          213.8,
+          1170.8
+        ],
+        [
+          381.3,
+          1175.5
+        ]
+      ],
+      "confidence": 0.3598,
+      "sam_score": 0.9311,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 92,
+      "polygon": [
+        [
+          115.9,
+          1830.4
+        ],
+        [
+          278.2,
+          1850.6
+        ],
+        [
+          284.6,
+          1799.6
+        ],
+        [
+          122.3,
+          1779.4
+        ]
+      ],
+      "confidence": 0.3486,
+      "sam_score": 0.9533,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 93,
+      "polygon": [
+        [
+          121.3,
+          1831.1
+        ],
+        [
+          112.9,
+          1906.1
+        ],
+        [
+          265.5,
+          1923.1
+        ],
+        [
+          273.9,
+          1848.1
+        ]
+      ],
+      "confidence": 0.3438,
+      "sam_score": 0.9412,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 95,
+      "polygon": [
+        [
+          1027.7,
+          2043.3
+        ],
+        [
+          1280.6,
+          2082.2
+        ],
+        [
+          1292.6,
+          2004.0
+        ],
+        [
+          1039.7,
+          1965.1
+        ]
+      ],
+      "confidence": 0.3365,
+      "sam_score": 0.9176,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 96,
+      "polygon": [
+        [
+          427.0,
+          1374.0
+        ],
+        [
+          592.0,
+          1374.0
+        ],
+        [
+          592.0,
+          1325.0
+        ],
+        [
+          427.0,
+          1325.0
+        ]
+      ],
+      "confidence": 0.3354,
+      "sam_score": 0.9537,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 97,
+      "polygon": [
+        [
+          267.0,
+          1744.0
+        ],
+        [
+          267.0,
+          1801.0
+        ],
+        [
+          393.0,
+          1801.0
+        ],
+        [
+          393.0,
+          1744.0
+        ]
+      ],
+      "confidence": 0.3325,
+      "sam_score": 0.9729,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 98,
+      "polygon": [
+        [
+          311.9,
+          957.8
+        ],
+        [
+          233.4,
+          1016.6
+        ],
+        [
+          264.3,
+          1057.8
+        ],
+        [
+          342.8,
+          999.0
+        ]
+      ],
+      "confidence": 0.3285,
+      "sam_score": 0.9464,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 99,
+      "polygon": [
+        [
+          234.8,
+          1310.2
+        ],
+        [
+          238.0,
+          1219.8
+        ],
+        [
+          53.6,
+          1213.2
+        ],
+        [
+          50.4,
+          1303.6
+        ]
+      ],
+      "confidence": 0.3248,
+      "sam_score": 0.9241,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 100,
+      "polygon": [
+        [
+          590.4,
+          1271.6
+        ],
+        [
+          415.5,
+          1263.8
+        ],
+        [
+          412.8,
+          1323.7
+        ],
+        [
+          587.7,
+          1331.5
+        ]
+      ],
+      "confidence": 0.3111,
+      "sam_score": 0.914,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 108,
+      "polygon": [
+        [
+          380.6,
+          517.2
+        ],
+        [
+          382.0,
+          485.0
+        ],
+        [
+          254.2,
+          479.4
+        ],
+        [
+          252.8,
+          511.6
+        ]
+      ],
+      "confidence": 0.2803,
+      "sam_score": 0.9455,
+      "identification": {
+        "method": "ocr",
+        "game_name": "Hanabi",
+        "confidence": 1.0,
+        "detail": {
+          "fragments": [
+            {
+              "text": "Hanabi",
+              "confidence": 0.6760005843396893
+            }
+          ],
+          "full_text": "Hanabi"
+        }
+      },
+      "collection_match": {
+        "name": "Hanabi",
+        "bgg_id": 98778,
+        "play_count": 23,
+        "last_played": "2014-11-11",
+        "user_rating": 9.0,
+        "image": "https://cf.geekdo-images.com/JDVksMwfcqoem1k_xtZrOA__micro/img/BfKY9rPYUCM74XL8113xBQyGEIk=/fit-in/64x64/filters:strip_icc()/pic2007286.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#de3733",
+      "label": "11yr 4mo ago (23 plays)"
+    },
+    {
+      "id": 109,
+      "polygon": [
+        [
+          547.7,
+          1374.0
+        ],
+        [
+          426.9,
+          1374.0
+        ],
+        [
+          426.9,
+          1414.5
+        ],
+        [
+          547.7,
+          1414.5
+        ]
+      ],
+      "confidence": 0.2747,
+      "sam_score": 0.9246,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 111,
+      "polygon": [
+        [
+          1197.3,
+          626.6
+        ],
+        [
+          990.8,
+          619.9
+        ],
+        [
+          988.6,
+          688.1
+        ],
+        [
+          1195.1,
+          694.8
+        ]
+      ],
+      "confidence": 0.268,
+      "sam_score": 0.867,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 112,
+      "polygon": [
+        [
+          1193.2,
+          402.5
+        ],
+        [
+          1401.3,
+          413.1
+        ],
+        [
+          1403.0,
+          380.3
+        ],
+        [
+          1194.9,
+          369.7
+        ]
+      ],
+      "confidence": 0.2678,
+      "sam_score": 0.879,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 115,
+      "polygon": [
+        [
+          1075.0,
+          766.0
+        ],
+        [
+          1075.0,
+          845.0
+        ],
+        [
+          1157.0,
+          845.0
+        ],
+        [
+          1157.0,
+          766.0
+        ]
+      ],
+      "confidence": 0.2585,
+      "sam_score": 0.9411,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 116,
+      "polygon": [
+        [
+          473.4,
+          177.1
+        ],
+        [
+          295.0,
+          203.2
+        ],
+        [
+          314.7,
+          337.8
+        ],
+        [
+          493.1,
+          311.7
+        ]
+      ],
+      "confidence": 0.2567,
+      "sam_score": 0.9443,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 119,
+      "polygon": [
+        [
+          368.8,
+          1490.0
+        ],
+        [
+          356.1,
+          1359.0
+        ],
+        [
+          279.2,
+          1366.4
+        ],
+        [
+          291.8,
+          1497.4
+        ]
+      ],
+      "confidence": 0.2493,
+      "sam_score": 0.9703,
+      "identification": {
+        "method": "clip_image",
+        "game_name": "Funemployed",
+        "confidence": 0.5971,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Funemployed",
+              "score": 0.5971
+            },
+            {
+              "name": "Eminent Domain",
+              "score": 0.4042
+            },
+            {
+              "name": "Kobayakawa",
+              "score": 0.3998
+            },
+            {
+              "name": "Monopoly",
+              "score": 0.385
+            },
+            {
+              "name": "Pixel Tactics 2",
+              "score": 0.3713
+            }
+          ],
+          "z_score": 5.72
+        }
+      },
+      "collection_match": {
+        "name": "Funemployed",
+        "bgg_id": 142296,
+        "play_count": 1,
+        "last_played": "2016-02-13",
+        "user_rating": 7.5,
+        "image": "https://cf.geekdo-images.com/o-fsLzEaCHcoAv3oxzOI_w__micro/img/sYuOFQNv_J2XRMs0ojM_5KazYIE=/fit-in/64x64/filters:strip_icc()/pic3558503.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_3plus",
+      "color": "#e44236",
+      "label": "10yr 1mo ago (1 plays)"
+    },
+    {
+      "id": 122,
+      "polygon": [
+        [
+          419.8,
+          1219.2
+        ],
+        [
+          553.6,
+          1228.4
+        ],
+        [
+          556.2,
+          1190.9
+        ],
+        [
+          422.4,
+          1181.7
+        ]
+      ],
+      "confidence": 0.2376,
+      "sam_score": 0.8674,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 124,
+      "polygon": [
+        [
+          1438.4,
+          1386.1
+        ],
+        [
+          1388.2,
+          1529.6
+        ],
+        [
+          1423.8,
+          1542.0
+        ],
+        [
+          1474.0,
+          1398.5
+        ]
+      ],
+      "confidence": 0.2347,
+      "sam_score": 0.8989,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 126,
+      "polygon": [
+        [
+          370.1,
+          1327.2
+        ],
+        [
+          374.5,
+          1242.8
+        ],
+        [
+          237.9,
+          1235.7
+        ],
+        [
+          233.5,
+          1320.1
+        ]
+      ],
+      "confidence": 0.2334,
+      "sam_score": 0.856,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 130,
+      "polygon": [
+        [
+          357.3,
+          1464.0
+        ],
+        [
+          386.0,
+          1464.0
+        ],
+        [
+          386.0,
+          1355.0
+        ],
+        [
+          357.3,
+          1355.0
+        ]
+      ],
+      "confidence": 0.2264,
+      "sam_score": 0.8891,
+      "identification": {
+        "method": "clip_image",
+        "game_name": "Aeon Trespass: Odyssey",
+        "confidence": 0.7323,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Aeon Trespass: Odyssey",
+              "score": 0.7323
+            },
+            {
+              "name": "Kingdom Death: Monster",
+              "score": 0.6646
+            },
+            {
+              "name": "Kiri-ai: The Duel",
+              "score": 0.6526
+            },
+            {
+              "name": "Good Cop Bad Cop",
+              "score": 0.6477
+            },
+            {
+              "name": "The Lord of the Rings: The Fellowship of the Ring – Trick-Taking Game",
+              "score": 0.644
+            }
+          ],
+          "z_score": 3.44
+        }
+      },
+      "collection_match": {
+        "name": "Aeon Trespass: Odyssey",
+        "bgg_id": 242705,
+        "play_count": 75,
+        "last_played": "2023-07-02",
+        "user_rating": 9.8,
+        "image": "https://cf.geekdo-images.com/l5vgu2EcX8qm7_p9zhROuQ__micro/img/eaHSCHsDsOma1e8dtERG8UPVxuk=/fit-in/64x64/filters:strip_icc()/pic4874391.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_2_3yr",
+      "color": "#ceb62c",
+      "label": "2yr 8mo ago (75 plays)"
+    },
+    {
+      "id": 135,
+      "polygon": [
+        [
+          420.8,
+          1514.5
+        ],
+        [
+          649.8,
+          1523.3
+        ],
+        [
+          653.9,
+          1416.5
+        ],
+        [
+          424.9,
+          1407.7
+        ]
+      ],
+      "confidence": 0.2113,
+      "sam_score": 0.7821,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 136,
+      "polygon": [
+        [
+          764.5,
+          1216.0
+        ],
+        [
+          502.6,
+          1248.2
+        ],
+        [
+          511.0,
+          1316.6
+        ],
+        [
+          772.9,
+          1284.4
+        ]
+      ],
+      "confidence": 0.2048,
+      "sam_score": 0.853,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 137,
+      "polygon": [
+        [
+          923.3,
+          1546.4
+        ],
+        [
+          973.9,
+          1835.4
+        ],
+        [
+          1174.3,
+          1800.3
+        ],
+        [
+          1123.7,
+          1511.3
+        ]
+      ],
+      "confidence": 0.1997,
+      "sam_score": 0.8151,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 143,
+      "polygon": [
+        [
+          470.7,
+          1266.3
+        ],
+        [
+          548.4,
+          1269.7
+        ],
+        [
+          550.3,
+          1226.3
+        ],
+        [
+          472.7,
+          1222.8
+        ]
+      ],
+      "confidence": 0.1914,
+      "sam_score": 0.8814,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 145,
+      "polygon": [
+        [
+          10.5,
+          315.4
+        ],
+        [
+          140.5,
+          324.2
+        ],
+        [
+          144.2,
+          269.7
+        ],
+        [
+          14.2,
+          260.9
+        ]
+      ],
+      "confidence": 0.1897,
+      "sam_score": 0.9513,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 147,
+      "polygon": [
+        [
+          380.5,
+          489.2
+        ],
+        [
+          382.1,
+          661.1
+        ],
+        [
+          436.2,
+          660.6
+        ],
+        [
+          434.6,
+          488.7
+        ]
+      ],
+      "confidence": 0.1892,
+      "sam_score": 0.897,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 148,
+      "polygon": [
+        [
+          1212.2,
+          768.6
+        ],
+        [
+          1213.2,
+          697.2
+        ],
+        [
+          1043.8,
+          694.8
+        ],
+        [
+          1042.8,
+          766.2
+        ]
+      ],
+      "confidence": 0.1882,
+      "sam_score": 0.9245,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 150,
+      "polygon": [
+        [
+          621.0,
+          1323.1
+        ],
+        [
+          748.3,
+          1316.0
+        ],
+        [
+          746.9,
+          1290.5
+        ],
+        [
+          619.6,
+          1297.7
+        ]
+      ],
+      "confidence": 0.1857,
+      "sam_score": 0.9418,
+      "identification": {
+        "method": "clip_image",
+        "game_name": "Forest Shuffle",
+        "confidence": 0.5527,
+        "detail": {
+          "candidates": [
+            {
+              "name": "Forest Shuffle",
+              "score": 0.5527
+            },
+            {
+              "name": "Black Forest",
+              "score": 0.4411
+            },
+            {
+              "name": "Claustrophobia 1643",
+              "score": 0.4368
+            },
+            {
+              "name": "Pixel Tactics 3",
+              "score": 0.4327
+            },
+            {
+              "name": "Aeon Trespass: Odyssey",
+              "score": 0.4311
+            }
+          ],
+          "z_score": 4.6
+        }
+      },
+      "collection_match": {
+        "name": "Forest Shuffle",
+        "bgg_id": 391163,
+        "play_count": 3,
+        "last_played": "2024-05-28",
+        "user_rating": 7.8,
+        "image": "https://cf.geekdo-images.com/08bC8NviSTNc4Zvur4pueA__micro/img/2zpIh1Kem-P0ln1_ZnQVnxg5awE=/fit-in/64x64/filters:strip_icc()/pic7578350.jpg",
+        "match_score": 1.0,
+        "match_quality": "auto"
+      },
+      "category": "played_1_2yr",
+      "color": "#9bbe3d",
+      "label": "1yr 10mo ago (3 plays)"
+    },
+    {
+      "id": 153,
+      "polygon": [
+        [
+          598.9,
+          1412.2
+        ],
+        [
+          603.3,
+          1309.3
+        ],
+        [
+          550.0,
+          1307.0
+        ],
+        [
+          545.7,
+          1409.9
+        ]
+      ],
+      "confidence": 0.1841,
+      "sam_score": 0.735,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 154,
+      "polygon": [
+        [
+          426.2,
+          1040.8
+        ],
+        [
+          423.0,
+          1100.5
+        ],
+        [
+          525.7,
+          1106.0
+        ],
+        [
+          528.9,
+          1046.3
+        ]
+      ],
+      "confidence": 0.1835,
+      "sam_score": 0.9028,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 164,
+      "polygon": [
+        [
+          213.5,
+          946.4
+        ],
+        [
+          209.5,
+          1164.5
+        ],
+        [
+          382.2,
+          1167.7
+        ],
+        [
+          386.2,
+          949.6
+        ]
+      ],
+      "confidence": 0.1685,
+      "sam_score": 0.9402,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 168,
+      "polygon": [
+        [
+          973.1,
+          1309.3
+        ],
+        [
+          975.6,
+          1264.8
+        ],
+        [
+          804.2,
+          1255.2
+        ],
+        [
+          801.7,
+          1299.7
+        ]
+      ],
+      "confidence": 0.1606,
+      "sam_score": 0.9303,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 175,
+      "polygon": [
+        [
+          733.3,
+          1219.8
+        ],
+        [
+          727.4,
+          1177.0
+        ],
+        [
+          550.4,
+          1201.5
+        ],
+        [
+          556.3,
+          1244.3
+        ]
+      ],
+      "confidence": 0.1547,
+      "sam_score": 0.7347,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 177,
+      "polygon": [
+        [
+          365.2,
+          1274.4
+        ],
+        [
+          473.5,
+          1272.5
+        ],
+        [
+          471.9,
+          1179.1
+        ],
+        [
+          363.6,
+          1181.0
+        ]
+      ],
+      "confidence": 0.1534,
+      "sam_score": 0.6943,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    },
+    {
+      "id": 179,
+      "polygon": [
+        [
+          1204.7,
+          580.7
+        ],
+        [
+          979.8,
+          574.3
+        ],
+        [
+          977.1,
+          670.8
+        ],
+        [
+          1202.0,
+          677.2
+        ]
+      ],
+      "confidence": 0.1505,
+      "sam_score": 0.9062,
+      "identification": null,
+      "collection_match": null,
+      "category": "unidentified",
+      "color": "#555555",
+      "label": "Unidentified"
+    }
+  ],
+  "summary": {
+    "total_detected": 111,
+    "identified": 36,
+    "matched": 36,
+    "never_played": 1,
+    "not_in_collection": 0,
+    "unidentified": 75,
+    "by_category": {
+      "unidentified": 75,
+      "played_recent": 2,
+      "played_3plus": 18,
+      "played_1_2yr": 6,
+      "played_2_3yr": 7,
+      "played_6_12mo": 2,
+      "never_played": 1
+    }
+  }
+}
