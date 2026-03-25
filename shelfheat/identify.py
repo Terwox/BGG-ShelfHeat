@@ -76,14 +76,14 @@ def polygon_crop(
 class GameIdentifier:
     """Identifies board games from polygon crops using tiered methods."""
 
-    def __init__(self, game_names: list[str], game_images: dict[str, "Path"] | None = None):
+    def __init__(self, game_names: list[str], game_images: dict[str, list] | None = None):
         """
         Args:
             game_names: List of game names from the user's BGG collection.
                         Used to constrain identification results.
-            game_images: Optional {game_name: local_image_path} for CLIP
-                         image-to-image matching. When provided, enables
-                         Tier B (CLIP image-image) before Tier C (CLIP text).
+            game_images: Optional {game_name: [list of image paths]} for CLIP
+                         image-to-image matching. Multiple images per game
+                         (front cover, 3D render, spine) improve matching.
         """
         self.game_names = game_names
         self.game_images = game_images or {}
@@ -93,7 +93,7 @@ class GameIdentifier:
         self._clip_tokenizer = None
         self._clip_text_features = None
         self._clip_image_features = None
-        self._clip_image_names = None  # parallel list of game names for image features
+        self._clip_image_names = None  # parallel list: game name per embedding row
 
     def identify(self, crop: np.ndarray) -> dict | None:
         """
@@ -279,22 +279,29 @@ class GameIdentifier:
             self._init_clip_images()
 
     def _init_clip_images(self):
-        """Pre-compute CLIP image embeddings for cached box art images."""
+        """Pre-compute CLIP image embeddings for cached box art images.
+
+        Supports multiple images per game (front cover, 3D render, spine, etc.).
+        Each image gets its own embedding row; _clip_image_names tracks which
+        game name each row belongs to. _try_clip_image() groups by game name
+        and takes the max score.
+        """
         import torch
-        from pathlib import Path
 
         device = next(self._clip_model.parameters()).device
         names = []
         tensors = []
 
-        for name, img_path in self.game_images.items():
-            try:
-                pil_img = Image.open(img_path).convert("RGB")
-                tensor = self._clip_preprocess(pil_img).unsqueeze(0)
-                tensors.append(tensor)
-                names.append(name)
-            except Exception:
-                continue
+        for name, img_paths in self.game_images.items():
+            # img_paths is a list of Paths (one or more images per game)
+            for img_path in img_paths:
+                try:
+                    pil_img = Image.open(img_path).convert("RGB")
+                    tensor = self._clip_preprocess(pil_img).unsqueeze(0)
+                    tensors.append(tensor)
+                    names.append(name)
+                except Exception:
+                    continue
 
         if not tensors:
             print("[identify] No valid box art images for CLIP image matching")
@@ -314,15 +321,24 @@ class GameIdentifier:
 
         self._clip_image_features = torch.cat(all_features, dim=0)
         self._clip_image_names = names
-        print(f"[identify] CLIP image embeddings cached for {len(names)} box art images")
+
+        unique_games = len(set(names))
+        print(f"[identify] CLIP image embeddings: {len(names)} images for {unique_games} games")
 
     # -------------------------------------------------------------------
     # Tier B: CLIP image-to-image matching
     # -------------------------------------------------------------------
 
     def _try_clip_image(self, crop: np.ndarray) -> dict | None:
-        """Match crop against cached box art images using CLIP image embeddings."""
+        """Match crop against cached box art images using CLIP image embeddings.
+
+        With multiple reference images per game, we compute cosine similarity
+        against ALL embeddings, then group by game name and take the max score
+        per game. This way a 3D render or spine image that matches well will
+        boost that game's score even if the front cover didn't match.
+        """
         import torch
+        from collections import defaultdict
 
         if self._clip_model is None:
             self._init_clip()
@@ -341,39 +357,41 @@ class GameIdentifier:
             image_features = self._clip_model.encode_image(image_input)
             image_features = image_features / image_features.norm(dim=-1, keepdim=True)
 
-        # Cosine similarity against box art image embeddings
+        # Cosine similarity against ALL image embeddings
         similarities = (image_features @ self._clip_image_features.T).squeeze(0)
         scores = similarities.cpu().numpy()
 
-        top_k = min(5, len(scores))
-        top_indices = np.argsort(scores)[::-1][:top_k]
+        # Group scores by game name, take max per game
+        game_max_scores: dict[str, float] = defaultdict(float)
+        for idx, score in enumerate(scores):
+            name = self._clip_image_names[idx]
+            s = float(score)
+            if s > game_max_scores[name]:
+                game_max_scores[name] = s
 
-        best_idx = top_indices[0]
-        best_score = float(scores[best_idx])
+        # Sort games by their max score
+        sorted_games = sorted(game_max_scores.items(), key=lambda x: -x[1])
+        top_k = min(5, len(sorted_games))
+        top_games = sorted_games[:top_k]
 
+        best_name, best_score = top_games[0]
         candidates = [
-            {"name": self._clip_image_names[idx], "score": round(float(scores[idx]), 4)}
-            for idx in top_indices
+            {"name": name, "score": round(score, 4)}
+            for name, score in top_games
         ]
 
-        # Z-score check: the top match must be a statistical outlier relative
-        # to the full distribution of scores for this crop. This prevents
-        # visually dominant reference images from matching everything.
-        mean_score = float(scores.mean())
-        std_score = float(scores.std())
-        if std_score > 0:
-            z_score = (best_score - mean_score) / std_score
-        else:
-            z_score = 0.0
+        # Z-score check on per-game max scores
+        all_max_scores = np.array(list(game_max_scores.values()))
+        mean_score = float(all_max_scores.mean())
+        std_score = float(all_max_scores.std())
+        z_score = (best_score - mean_score) / std_score if std_score > 0 else 0.0
 
-        # Require z-score >= 3.0 (top match is 3+ std devs above mean)
-        # AND absolute threshold >= 0.45
-        # AND margin >= 0.06 between top-1 and top-2
         if z_score < 3.0:
             return None
 
-        if len(top_indices) >= 2:
-            second_score = float(scores[top_indices[1]])
+        # Margin check between top-1 and top-2 games
+        if len(top_games) >= 2:
+            second_score = top_games[1][1]
             margin = best_score - second_score
             if margin < 0.06:
                 return None  # ambiguous — let Tier C try
@@ -381,7 +399,7 @@ class GameIdentifier:
         if best_score >= 0.45:
             return {
                 "method": "clip_image",
-                "game_name": self._clip_image_names[best_idx],
+                "game_name": best_name,
                 "confidence": round(best_score, 4),
                 "detail": {"candidates": candidates, "z_score": round(z_score, 2)},
             }

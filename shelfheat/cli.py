@@ -46,7 +46,10 @@ def main():
     game_images = {}
     if not getattr(args, "no_images", False):
         enrich_from_bggdb(collection.games)
-        game_images = ensure_collection_images(collection.games)
+        include_gallery = not getattr(args, "no_gallery", False)
+        game_images = ensure_collection_images(
+            collection.games, include_gallery=include_gallery
+        )
     else:
         print("[pipeline] Skipping box art image download (--no-images)")
 
@@ -365,6 +368,12 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         default=False,
         help="Skip downloading BGG box art images (disables CLIP image matching)",
+    )
+    p.add_argument(
+        "--no-gallery",
+        action="store_true",
+        default=False,
+        help="Skip fetching gallery images from BGG (use front covers only)",
     )
     p.add_argument(
         "--version", "-V",
