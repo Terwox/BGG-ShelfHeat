@@ -47,3 +47,6 @@ output/
 *.html
 !viewer/index.html
 results*.json
+
+# OMX local runtime artifacts
+.omx/
