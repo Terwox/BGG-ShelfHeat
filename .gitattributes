@@ -1,0 +1,37 @@
+# Normalize text in Git; prefer Windows CRLF in this working tree.
+* text=auto eol=crlf
+
+# Keep Unix/WSL-executed scripts LF so shebangs keep working.
+*.sh text eol=lf
+*.bash text eol=lf
+*.zsh text eol=lf
+*.fish text eol=lf
+*.py text eol=lf
+*.rb text eol=lf
+*.pl text eol=lf
+
+# Windows scripts can stay Windows-native.
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary assets.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.7z binary
+*.gz binary
+*.mp3 binary
+*.ogg binary
+*.wav binary
+*.mp4 binary
+*.ttf binary
+*.otf binary
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
