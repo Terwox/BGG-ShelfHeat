@@ -9,6 +9,8 @@ Usage:
     python -m shelfheat photo.jpg --bgg-user alice
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import sys
@@ -22,12 +24,6 @@ if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from shelfheat import __version__
-from shelfheat.detect import detect_boxes
-from shelfheat.heatmap import classify_item, compute_summary, generate_heatmap
-from shelfheat.identify import GameIdentifier, polygon_crop
-from shelfheat.image_cache import ensure_collection_images, enrich_from_bggdb
-from shelfheat.match import BGGCollection
-from shelfheat.segment import segment_boxes
 
 
 def main():
@@ -45,6 +41,8 @@ def main():
     # ── Download/cache box art images for CLIP image matching ─────
     game_images = {}
     if not getattr(args, "no_images", False):
+        from shelfheat.image_cache import ensure_collection_images, enrich_from_bggdb
+
         enrich_from_bggdb(collection.games)
         include_gallery = not getattr(args, "no_gallery", False)
         game_images = ensure_collection_images(
@@ -82,6 +80,8 @@ def main():
             }
             for g in collection.games if g.get("name")
         ]
+
+        from shelfheat.heatmap import generate_heatmap
 
         generate_heatmap(
             photo_path=str(photo),
@@ -132,6 +132,11 @@ def _run_pipeline(
 
     Returns a dict with items (classified), sizes, scale_factor, and summary.
     """
+    from shelfheat.detect import detect_boxes
+    from shelfheat.heatmap import classify_item, compute_summary
+    from shelfheat.identify import GameIdentifier, polygon_crop
+    from shelfheat.segment import segment_boxes
+
     # Stage 1: Detect bounding boxes
     det = detect_boxes(photo_path, tiling=tiling)
     detections = det["detections"]
@@ -288,6 +293,8 @@ def _dedup_same_game(items: list[dict]) -> list[dict]:
 
 def _load_collection(args: argparse.Namespace) -> BGGCollection:
     """Load BGG collection from API or CSV based on CLI args."""
+    from shelfheat.match import BGGCollection
+
     if args.bgg_user:
         return BGGCollection.from_api(args.bgg_user)
     return BGGCollection.from_csv(args.collection)

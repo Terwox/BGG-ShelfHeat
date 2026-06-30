@@ -16,7 +16,6 @@ from datetime import datetime
 from pathlib import Path
 
 import numpy as np
-import requests
 
 BGG_API_BASE = "https://boardgamegeek.com/xmlapi2"
 EMBED_MODEL_ID = "all-MiniLM-L6-v2"
@@ -198,6 +197,8 @@ class BGGCollection:
 
 def _fetch_collection(username: str) -> list[dict]:
     """Fetch collection via XML API with retry on 202 (queued)."""
+    import requests
+
     url = f"{BGG_API_BASE}/collection"
     params = {"username": username, "stats": 1, "own": 1}
 
@@ -254,6 +255,8 @@ def _text_or_none(parent, tag):
 
 def _fetch_plays(username: str, max_pages: int = 10) -> dict[int, str]:
     """Fetch play history. Returns {bgg_id: most_recent_date_str}."""
+    import requests
+
     latest: dict[int, str] = {}
     url = f"{BGG_API_BASE}/plays"
 
@@ -293,6 +296,8 @@ def _fetch_related_game_ids(bgg_id: int) -> list[int]:
     Looks for: implementations, compilations, reimplementations, and
     games in the same family. Returns a list of related BGG IDs.
     """
+    import requests
+
     url = f"{BGG_API_BASE}/thing"
     try:
         resp = requests.get(url, params={"id": bgg_id, "type": "boardgame"}, timeout=15)
