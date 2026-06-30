@@ -29,3 +29,7 @@ shelfheat = "shelfheat.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["shelfheat*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

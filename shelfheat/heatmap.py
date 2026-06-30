@@ -160,7 +160,7 @@ def _days_since(date_str: str) -> int:
     try:
         d = datetime.strptime(date_str[:10], "%Y-%m-%d")
     except ValueError:
-        return MAX_DAYS_LOG  # unparseable → ancient
+        return MAX_DAYS  # unparseable -> ancient
     delta = datetime.now() - d
     return max(0, delta.days)
 
@@ -807,7 +807,7 @@ main{{
   // --- Edit persistence: sidecar JSON ---
   function editsFileName(){{
     const p=window.location.pathname;
-    return p.replace(/_heatmap\.html$/,'_edits.json').replace(/^.*\//,'');
+    return p.replace(/_heatmap\\.html$/,'_edits.json').replace(/^.*\\//,'');
   }}
 
   function applyEdits(se){{
