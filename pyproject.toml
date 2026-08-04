@@ -1,6 +1,6 @@
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "shelfheat"
@@ -22,10 +22,17 @@ dependencies = [
     "requests>=2.31.0",
     "opencv-python>=4.8.0",
     "numpy>=1.24.0",
+    "shapely>=2.0.0",
+    "gradio>=5.0.0",
 ]
 
 [project.scripts]
 shelfheat = "shelfheat.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.0",
+]
 
 [tool.setuptools.packages.find]
 include = ["shelfheat*"]
