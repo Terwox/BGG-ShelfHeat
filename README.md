@@ -1,3 +1,14 @@
+---
+title: ShelfHeat
+emoji: 🎲
+colorFrom: green
+colorTo: red
+sdk: gradio
+app_file: app.py
+pinned: false
+license: mit
+---
+
 # BGG-ShelfHeat
 
 Take a photo of your board game shelf. Get an interactive heatmap showing what you haven't played.
@@ -6,6 +17,30 @@ Green means "played recently." Red means "it's been a while." Purple means *sham
 
 <!-- TODO: screenshot placeholder — replace with actual screenshot -->
 <!-- ![ShelfHeat example](docs/screenshot.png) -->
+
+## Try It Online
+
+The public beta target is a free Hugging Face Space. The app flow is:
+
+1. Upload one JPEG or PNG shelf photo.
+2. Enter a BoardGameGeek username.
+3. Wait while ShelfHeat fetches collection/play data server-side and runs the local vision pipeline.
+4. Download the generated interactive heatmap HTML and results JSON.
+
+Public web users do not download or upload BGG collection export files. The hosted app uses the server-side `BGG_API_TOKEN` secret and shows BoardGameGeek attribution.
+
+Public URL: `TBD`
+
+Deploy once `.secrets` contains `BGG_API_TOKEN` and `HF_TOKEN`:
+
+```powershell
+uv run python scripts/deploy-hf-space.py --private
+```
+
+The deploy helper reads `BGG_API_TOKEN` and `HF_TOKEN` from the environment or local `.secrets`,
+creates or updates a Gradio Space, configures the Space secret, and uploads only
+release-safe files. Pass an explicit repo id, such as `YOUR_HF_USERNAME/shelfheat`,
+only if you do not want the helper to use the token owner's account.
 
 ## How It Works
 
@@ -66,13 +101,29 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 
 ## Usage
 
+### Web app locally
+
+Create a local `.secrets` file or set an environment variable:
+
+```bash
+BGG_API_TOKEN=your-bgg-api-token
+```
+
+Then run:
+
+```bash
+python app.py
+```
+
+The local web app uses the same conservative defaults planned for free hosting: one queued job at a time, uploaded image validation/downscaling, no BGG image/gallery downloads, and no related-game `/thing` lookups during matching.
+
 ### Basic: BGG username
 
 ```bash
 shelfheat photo.jpg --bgg-user your_bgg_username
 ```
 
-This fetches your collection and play history from BoardGameGeek's API, then generates the heatmap.
+This fetches your collection and play history from BoardGameGeek's API, then generates the heatmap. BGG username import requires a server-side `BGG_API_TOKEN`.
 
 ### From a CSV export
 
@@ -137,6 +188,13 @@ No install, no server — works entirely in the browser.
 - **Resolution.** Higher is better — phone cameras work great. Webcams less so.
 - **One shelf section per photo.** A single KALLAX cube or one shelf row works best. Panoramas of an entire wall will struggle.
 - **Spine-out is easier.** Games with their spine facing the camera are identified more reliably than face-out covers.
+
+## Public Beta Limitations
+
+- Free CPU hosting is slow, especially after a cold start.
+- Recognition is imperfect; glare, odd angles, stacked boxes, and tiny spines are hard.
+- BGG username import depends on BGG API availability and collection visibility.
+- Uploaded photos and fetched BGG collection data are processed transiently. Model caches may persist, but per-user job data should not be stored to disk beyond short-lived output downloads.
 
 ## Architecture
 

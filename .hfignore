@@ -1,0 +1,14 @@
+.git/
+.omx/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.secrets
+.env
+.env.*
+output/
+output_eval/
+*.html
+results*.json
+test-collection.csv
