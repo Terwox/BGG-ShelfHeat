@@ -10,44 +10,192 @@ Matching uses sentence-transformers cosine similarity, NOT fuzzy string matching
 
 import csv
 import io
+import os
 import time
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 
 BGG_API_BASE = "https://boardgamegeek.com/xmlapi2"
 EMBED_MODEL_ID = "all-MiniLM-L6-v2"
+BGG_CACHE_TTL_SECONDS = 15 * 60
 
 # Thresholds from architecture spec
 AUTO_MATCH_THRESHOLD = 0.85
 REVIEW_THRESHOLD = 0.70
 
 
+class BGGApiError(RuntimeError):
+    """Base error for user-facing BGG API failures."""
+
+
+class BGGConfigurationError(BGGApiError):
+    """Raised when server-side BGG API configuration is missing or invalid."""
+
+
+class BGGUnavailableError(BGGApiError):
+    """Raised when BGG remains queued, throttled, or unavailable."""
+
+
+class BGGApiClient:
+    """Small token-aware XML API client with process-local in-memory caching."""
+
+    def __init__(
+        self,
+        token: str,
+        *,
+        base_url: str = BGG_API_BASE,
+        cache_ttl_seconds: int = BGG_CACHE_TTL_SECONDS,
+        session: Any | None = None,
+        sleep=time.sleep,
+    ):
+        token = (token or "").strip()
+        if not token:
+            raise BGGConfigurationError(
+                "BGG_API_TOKEN is not configured on the server."
+            )
+
+        self._authorization_header = f"Bearer {token}"
+        self.base_url = base_url.rstrip("/")
+        self.cache_ttl_seconds = cache_ttl_seconds
+        self.session = session
+        self.sleep = sleep
+        self._cache: dict[tuple[str, tuple[tuple[str, str], ...]], tuple[float, str]] = {}
+
+    @classmethod
+    def from_environment(cls, **kwargs) -> "BGGApiClient":
+        return cls(_load_bgg_api_token(), **kwargs)
+
+    def get_xml(
+        self,
+        endpoint: str,
+        params: dict[str, object],
+        *,
+        timeout: int = 30,
+        max_attempts: int = 6,
+        retry_queued: bool = True,
+    ) -> str:
+        key = self._cache_key(endpoint, params)
+        cached = self._cache.get(key)
+        now = time.time()
+        if cached and now - cached[0] < self.cache_ttl_seconds:
+            return cached[1]
+
+        request_session = self._session()
+        url = f"{self.base_url}/{endpoint.lstrip('/')}"
+        headers = {
+            "Authorization": self._authorization_header,
+            "User-Agent": "ShelfHeat/0.1.0 (BGG username import)",
+        }
+
+        for attempt in range(max_attempts):
+            try:
+                response = request_session.get(
+                    url,
+                    params=params,
+                    headers=headers,
+                    timeout=timeout,
+                )
+            except Exception as exc:
+                if attempt == max_attempts - 1:
+                    raise BGGUnavailableError(
+                        "Could not reach BoardGameGeek. Please try again later."
+                    ) from exc
+                self.sleep(_retry_wait(attempt))
+                continue
+
+            status = response.status_code
+            if status == 200:
+                self._cache[key] = (time.time(), response.text)
+                return response.text
+
+            if status in (401, 403):
+                raise BGGConfigurationError(
+                    "The server's BGG API token was rejected."
+                )
+
+            if status == 202 and retry_queued:
+                if attempt == max_attempts - 1:
+                    raise BGGUnavailableError(
+                        "BGG is still preparing that response. Please try again shortly."
+                    )
+                self.sleep(_retry_wait(attempt))
+                continue
+
+            if status in (429, 500, 502, 503, 504):
+                if attempt == max_attempts - 1:
+                    raise BGGUnavailableError(
+                        "BoardGameGeek is busy right now. Please try again later."
+                    )
+                self.sleep(_retry_wait(attempt))
+                continue
+
+            if status == 404:
+                raise BGGApiError("BGG could not find that username or resource.")
+
+            raise BGGApiError(f"BGG returned HTTP {status}.")
+
+        raise BGGUnavailableError("BGG API did not return a response in time.")
+
+    def _session(self):
+        if self.session is not None:
+            return self.session
+
+        import requests
+
+        self.session = requests.Session()
+        return self.session
+
+    @staticmethod
+    def _cache_key(
+        endpoint: str,
+        params: dict[str, object],
+    ) -> tuple[str, tuple[tuple[str, str], ...]]:
+        return (
+            endpoint.lstrip("/"),
+            tuple(sorted((str(k), str(v)) for k, v in params.items())),
+        )
+
+
 class BGGCollection:
     """A user's BGG collection with embedding-based name matching."""
 
-    def __init__(self, games: list[dict]):
+    def __init__(
+        self,
+        games: list[dict],
+        *,
+        api_client: BGGApiClient | None = None,
+    ):
         self.games = games  # [{name, bgg_id, play_count, last_played, user_rating, ...}]
+        self._api_client = api_client
         self._embed_model = None
         self._name_embeddings = None
 
     @classmethod
-    def from_api(cls, username: str, include_plays: bool = True) -> "BGGCollection":
+    def from_api(
+        cls,
+        username: str,
+        include_plays: bool = True,
+        *,
+        api_client: BGGApiClient | None = None,
+    ) -> "BGGCollection":
         """Fetch collection from BGG XML API v2."""
+        client = api_client or BGGApiClient.from_environment()
         print(f"[match] Fetching BGG collection for '{username}'...")
-        games = _fetch_collection(username)
+        games = _fetch_collection(username, client=client)
         print(f"[match] {len(games)} games in collection")
 
         if include_plays and games:
             print("[match] Fetching play history (for last-played dates)...")
-            plays = _fetch_plays(username)
+            plays = _fetch_plays(username, client=client)
             _merge_play_dates(games, plays)
             played = sum(1 for g in games if g.get("last_played"))
             print(f"[match] Play dates found for {played}/{len(games)} games")
 
-        return cls(games)
+        return cls(games, api_client=client)
 
     @classmethod
     def from_csv(cls, csv_path: str) -> "BGGCollection":
@@ -151,7 +299,7 @@ class BGGCollection:
         if bgg_id in self._family_cache:
             return self._family_cache[bgg_id]
 
-        related_ids = _fetch_related_game_ids(bgg_id)
+        related_ids = _fetch_related_game_ids(bgg_id, client=self._api_client)
         if not related_ids:
             self._family_cache[bgg_id] = None
             return None
@@ -195,31 +343,26 @@ class BGGCollection:
 # BGG XML API helpers
 # ---------------------------------------------------------------------------
 
-def _fetch_collection(username: str) -> list[dict]:
+def _fetch_collection(
+    username: str,
+    *,
+    client: BGGApiClient | None = None,
+) -> list[dict]:
     """Fetch collection via XML API with retry on 202 (queued)."""
-    import requests
-
-    url = f"{BGG_API_BASE}/collection"
-    params = {"username": username, "stats": 1, "own": 1}
-
-    for attempt in range(6):
-        resp = requests.get(url, params=params, timeout=30)
-        if resp.status_code == 200:
-            break
-        if resp.status_code == 202:
-            wait = 3 * (attempt + 1)
-            print(f"  BGG is generating collection... retrying in {wait}s")
-            time.sleep(wait)
-            continue
-        resp.raise_for_status()
-    else:
-        raise RuntimeError("BGG API did not return collection after 6 attempts")
-
-    return _parse_collection_xml(resp.text)
+    api = client or BGGApiClient.from_environment()
+    text = api.get_xml(
+        "collection",
+        {"username": username, "stats": 1, "own": 1},
+        timeout=30,
+        max_attempts=6,
+        retry_queued=True,
+    )
+    return _parse_collection_xml(text)
 
 
 def _parse_collection_xml(xml_text: str) -> list[dict]:
     root = ET.fromstring(xml_text)
+    _raise_xml_errors(root)
     games = []
     for item in root.findall("item"):
         name_el = item.find("name")
@@ -245,6 +388,9 @@ def _parse_collection_xml(xml_text: str) -> list[dict]:
                 "image": _text_or_none(item, "thumbnail"),
             }
         )
+    if not games:
+        raise BGGApiError("No owned games were returned for that BGG username.")
+
     return games
 
 
@@ -253,19 +399,26 @@ def _text_or_none(parent, tag):
     return el.text if el is not None and el.text else None
 
 
-def _fetch_plays(username: str, max_pages: int = 10) -> dict[int, str]:
+def _fetch_plays(
+    username: str,
+    max_pages: int = 10,
+    *,
+    client: BGGApiClient | None = None,
+) -> dict[int, str]:
     """Fetch play history. Returns {bgg_id: most_recent_date_str}."""
-    import requests
-
+    api = client or BGGApiClient.from_environment()
     latest: dict[int, str] = {}
-    url = f"{BGG_API_BASE}/plays"
 
     for page in range(1, max_pages + 1):
-        resp = requests.get(url, params={"username": username, "page": page}, timeout=30)
-        if resp.status_code != 200:
-            break
-
-        root = ET.fromstring(resp.text)
+        text = api.get_xml(
+            "plays",
+            {"username": username, "page": page},
+            timeout=30,
+            max_attempts=3,
+            retry_queued=True,
+        )
+        root = ET.fromstring(text)
+        _raise_xml_errors(root)
         plays = root.findall("play")
         if not plays:
             break
@@ -289,25 +442,34 @@ def _fetch_plays(username: str, max_pages: int = 10) -> dict[int, str]:
     return latest
 
 
-def _fetch_related_game_ids(bgg_id: int) -> list[int]:
+def _fetch_related_game_ids(
+    bgg_id: int,
+    *,
+    client: BGGApiClient | None = None,
+) -> list[int]:
     """
     Fetch related game IDs from BGG's thing API.
 
     Looks for: implementations, compilations, reimplementations, and
     games in the same family. Returns a list of related BGG IDs.
     """
-    import requests
+    if client is None:
+        return []
 
-    url = f"{BGG_API_BASE}/thing"
     try:
-        resp = requests.get(url, params={"id": bgg_id, "type": "boardgame"}, timeout=15)
-        if resp.status_code != 200:
-            return []
+        xml_text = client.get_xml(
+            "thing",
+            {"id": bgg_id, "type": "boardgame"},
+            timeout=15,
+            max_attempts=3,
+            retry_queued=True,
+        )
     except Exception:
         return []
 
     try:
-        root = ET.fromstring(resp.text)
+        root = ET.fromstring(xml_text)
+        _raise_xml_errors(root)
     except Exception:
         return []
 
@@ -333,6 +495,51 @@ def _fetch_related_game_ids(bgg_id: int) -> list[int]:
                 pass
 
     return list(related)
+
+
+def _load_bgg_api_token() -> str:
+    token = os.environ.get("BGG_API_TOKEN", "").strip()
+    if token:
+        return token
+
+    secrets_file = _find_local_secrets_file()
+    if secrets_file:
+        for line in secrets_file.read_text(encoding="utf-8-sig").splitlines():
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#") or "=" not in stripped:
+                continue
+            key, value = stripped.split("=", 1)
+            if key.strip() == "BGG_API_TOKEN" and value.strip():
+                return value.strip().strip('"').strip("'")
+
+    raise BGGConfigurationError("BGG_API_TOKEN is not configured on the server.")
+
+
+def _find_local_secrets_file() -> Path | None:
+    cwd = Path.cwd().resolve()
+    for folder in (cwd, *cwd.parents):
+        candidate = folder / ".secrets"
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def _retry_wait(attempt: int) -> int:
+    return min(30, 3 * (attempt + 1))
+
+
+def _raise_xml_errors(root: ET.Element) -> None:
+    if root.tag != "errors":
+        return
+
+    messages = []
+    for error in root.findall("error"):
+        message = error.findtext("message")
+        if message:
+            messages.append(message.strip())
+
+    detail = messages[0] if messages else "BGG returned an error."
+    raise BGGApiError(detail)
 
 
 def _merge_play_dates(games: list[dict], plays: dict[int, str]):

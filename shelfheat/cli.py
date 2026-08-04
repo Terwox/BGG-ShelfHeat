@@ -12,6 +12,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 import json
 import sys
 import time
@@ -24,15 +25,65 @@ if sys.stdout.encoding and sys.stdout.encoding.lower().startswith("cp"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from shelfheat import __version__
+from shelfheat.match import BGGCollection
+
+
+@dataclass(frozen=True)
+class ShelfHeatJobResult:
+    """Paths and summary for one processed shelf photo."""
+
+    photo_path: Path
+    html_path: Path
+    json_path: Path
+    summary: dict
+    elapsed: float
 
 
 def main():
     args = _parse_args()
-    output_dir = Path(args.output)
+    results = run_shelfheat_job(
+        args.photos,
+        output_dir=args.output,
+        bgg_user=args.bgg_user,
+        collection_path=args.collection,
+        no_images=args.no_images,
+        no_gallery=args.no_gallery,
+        no_tiling=args.no_tiling,
+        inherit_plays=True,
+    )
+
+    output_dir = Path(args.output).resolve()
+    for result in results:
+        _print_summary(result.summary, result.elapsed)
+
+    print(f"\nDone. Output in {output_dir}/")
+
+
+def run_shelfheat_job(
+    photos: list[str | Path],
+    *,
+    output_dir: str | Path = "output",
+    bgg_user: str | None = None,
+    collection_path: str | Path | None = None,
+    no_images: bool = False,
+    no_gallery: bool = False,
+    no_tiling: bool = False,
+    inherit_plays: bool = True,
+) -> list[ShelfHeatJobResult]:
+    """
+    Run ShelfHeat for one or more photos and write HTML/JSON outputs.
+
+    The web app uses this with `no_images=True` and `inherit_plays=False` so
+    public jobs do not trigger BGG image/cache/gallery or hidden `/thing` calls.
+    """
+    if bool(bgg_user) == bool(collection_path):
+        raise ValueError("Provide exactly one of bgg_user or collection_path.")
+
+    output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # ── Load BGG collection (shared across all photos) ──────────────
-    collection = _load_collection(args)
+    collection = load_collection(bgg_user=bgg_user, collection_path=collection_path)
     game_names = collection.game_names()
     print(f"\n{'='*60}")
     print(f"Collection: {len(game_names)} games")
@@ -40,21 +91,22 @@ def main():
 
     # ── Download/cache box art images for CLIP image matching ─────
     game_images = {}
-    if not getattr(args, "no_images", False):
+    if not no_images:
         from shelfheat.image_cache import ensure_collection_images, enrich_from_bggdb
 
         enrich_from_bggdb(collection.games)
-        include_gallery = not getattr(args, "no_gallery", False)
+        include_gallery = not no_gallery
         game_images = ensure_collection_images(
             collection.games, include_gallery=include_gallery
         )
     else:
         print("[pipeline] Skipping box art image download (--no-images)")
 
-    use_tiling = not getattr(args, "no_tiling", False)
+    use_tiling = not no_tiling
 
     # ── Process each photo ──────────────────────────────────────────
-    for photo_path in args.photos:
+    results_out: list[ShelfHeatJobResult] = []
+    for photo_path in photos:
         photo = Path(photo_path)
         if not photo.exists():
             print(f"[error] File not found: {photo}")
@@ -65,7 +117,14 @@ def main():
         print(f"{'─'*60}")
         t0 = time.time()
 
-        results = _run_pipeline(str(photo), collection, game_names, game_images, use_tiling)
+        results = _run_pipeline(
+            str(photo),
+            collection,
+            game_names,
+            game_images,
+            use_tiling,
+            inherit_plays=inherit_plays,
+        )
         elapsed = time.time() - t0
 
         # Write heatmap HTML
@@ -88,32 +147,40 @@ def main():
             items=results["items"],
             detection_size=tuple(results["detection_size"]),
             output_path=str(html_path),
-            bgg_user=args.bgg_user,
+            bgg_user=bgg_user,
             collection_games=collection_for_ui,
         )
 
         # Write results JSON (for the standalone viewer)
         json_path = output_dir / f"{stem}_results.json"
-        results_out = {
+        json_payload = {
             "version": __version__,
             "generated": datetime.now(timezone.utc).isoformat(),
             "photo_filename": photo.name,
             "original_size": results["original_size"],
             "detection_size": results["detection_size"],
             "scale_factor": results["scale_factor"],
-            "bgg_user": args.bgg_user,
+            "bgg_user": bgg_user,
             "items": results["items"],
             "summary": results["summary"],
         }
         json_path.write_text(
-            json.dumps(results_out, indent=2, ensure_ascii=False),
+            json.dumps(json_payload, indent=2, ensure_ascii=False),
             encoding="utf-8",
         )
         print(f"[results] Wrote {json_path}")
 
-        _print_summary(results["summary"], elapsed)
+        results_out.append(
+            ShelfHeatJobResult(
+                photo_path=photo,
+                html_path=html_path,
+                json_path=json_path,
+                summary=results["summary"],
+                elapsed=elapsed,
+            )
+        )
 
-    print(f"\nDone. Output in {output_dir.resolve()}/")
+    return results_out
 
 
 # ---------------------------------------------------------------------------
@@ -126,6 +193,7 @@ def _run_pipeline(
     game_names: list[str],
     game_images: dict[str, "Path"] | None = None,
     tiling: bool = True,
+    inherit_plays: bool = True,
 ) -> dict:
     """
     Run the full detection → identification → matching pipeline on one photo.
@@ -169,7 +237,10 @@ def _run_pipeline(
         # Stage 5: Match identification against collection
         match_result = None
         if ident:
-            match_result = collection.match(ident["game_name"])
+            match_result = collection.match(
+                ident["game_name"],
+                inherit_plays=inherit_plays,
+            )
 
         # Stage 6 prep: classify for heatmap coloring
         category, color, label = classify_item(ident, match_result)
@@ -291,13 +362,17 @@ def _dedup_same_game(items: list[dict]) -> list[dict]:
     return items
 
 
-def _load_collection(args: argparse.Namespace) -> BGGCollection:
-    """Load BGG collection from API or CSV based on CLI args."""
-    from shelfheat.match import BGGCollection
-
-    if args.bgg_user:
-        return BGGCollection.from_api(args.bgg_user)
-    return BGGCollection.from_csv(args.collection)
+def load_collection(
+    *,
+    bgg_user: str | None = None,
+    collection_path: str | Path | None = None,
+) -> BGGCollection:
+    """Load BGG collection from API or CSV based on caller input."""
+    if bgg_user:
+        return BGGCollection.from_api(bgg_user)
+    if collection_path:
+        return BGGCollection.from_csv(str(collection_path))
+    raise ValueError("Provide a BGG username or collection CSV path.")
 
 
 def _sanitize_match(match: dict) -> dict:

@@ -250,6 +250,18 @@ def _build_polygon_svg(item: dict) -> str:
     )
 
 
+def _json_for_inline_script(value: object) -> str:
+    """Serialize JSON safely for direct assignment inside an inline script."""
+    text = json.dumps(value, ensure_ascii=True)
+    return (
+        text.replace("&", "\\u0026")
+        .replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace(chr(0x2028), "\\u2028")
+        .replace(chr(0x2029), "\\u2029")
+    )
+
+
 def _build_legend_html(summary: dict) -> str:
     """Build the legend panel with continuous gradient bar + special colors."""
     by_cat = summary.get("by_category", {})
@@ -375,13 +387,13 @@ def generate_heatmap(
             if g["name"] not in seen:
                 seen.add(g["name"])
                 deduped.append(g)
-        game_list_json = json.dumps(deduped, ensure_ascii=True)
+        game_list = deduped
     elif collection_names:
         # Legacy: just names, wrap as objects
-        game_list_json = json.dumps(
-            [{"name": n, "plays": 0, "last_played": ""} for n in sorted(set(collection_names))],
-            ensure_ascii=True,
-        )
+        game_list = [
+            {"name": n, "plays": 0, "last_played": ""}
+            for n in sorted(set(collection_names))
+        ]
     else:
         names = set()
         for it in items:
@@ -391,18 +403,19 @@ def generate_heatmap(
             ident = it.get("identification")
             if ident and ident.get("game_name"):
                 names.add(ident["game_name"])
-        game_list_json = json.dumps(
-            [{"name": n, "plays": 0, "last_played": ""} for n in sorted(names)],
-            ensure_ascii=True,
-        )
+        game_list = [
+            {"name": n, "plays": 0, "last_played": ""}
+            for n in sorted(names)
+        ]
+
+    game_list_json = _json_for_inline_script(game_list)
 
     # Build items JSON for the edit UI (so edits can write back)
-    items_json = json.dumps(
+    items_json = _json_for_inline_script(
         [{"id": it.get("id", i), "category": it.get("category", ""),
           "name": (it.get("identification") or {}).get("game_name", ""),
           "polygon": it.get("polygon", [])}
-         for i, it in enumerate(items)],
-        ensure_ascii=True,
+         for i, it in enumerate(items)]
     )
 
     page = _HTML_TEMPLATE.format(
@@ -663,7 +676,7 @@ main{{
     const matches=lq?gameList.filter(g=>g.name.toLowerCase().includes(lq)).slice(0,20):gameList.slice(0,20);
     editResults.innerHTML=matches.map(g=>{{
       const extra=g.last_played?' ('+g.last_played.slice(0,10)+')':g.plays>0?' ('+g.plays+' plays)':'';
-      return '<div class="er'+(g.name===editSelected?' sel':'')+'" data-name="'+esc(g.name)+'">'+esc(g.name)+'<span style="color:#888;font-size:.75rem">'+esc(extra)+'</span></div>';
+      return '<div class="er'+(g.name===editSelected?' sel':'')+'" data-name="'+escAttr(g.name)+'">'+esc(g.name)+'<span style="color:#888;font-size:.75rem">'+esc(extra)+'</span></div>';
     }}).join('');
     editResults.querySelectorAll('.er').forEach(el=>{{
       el.addEventListener('click',()=>{{
@@ -900,6 +913,10 @@ main{{
     const d=document.createElement('div');
     d.textContent=s;
     return d.innerHTML;
+  }}
+
+  function escAttr(s){{
+    return esc(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }}
 
   // --- Palette toggle ---

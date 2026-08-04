@@ -103,3 +103,33 @@ def test_generate_heatmap_writes_self_contained_html(tmp_path):
     assert "data:image/jpeg;base64," in html
     assert "Arcs" in html
     assert "<polygon" in html
+
+
+def test_generate_heatmap_escapes_inline_script_json(tmp_path):
+    photo = tmp_path / "shelf.jpg"
+    Image.new("RGB", (32, 24), color=(30, 30, 40)).save(photo)
+    malicious_name = 'Bad </script><script>alert("x")</script>'
+
+    output = tmp_path / "shelf_heatmap.html"
+    item = {
+        "id": 0,
+        "polygon": [[1, 1], [20, 1], [20, 12], [1, 12]],
+        "identification": {"game_name": malicious_name, "method": "manual", "confidence": 1.0},
+        "collection_match": {"name": malicious_name, "play_count": 0, "last_played": None},
+        "category": "never_played",
+        "color": "#e839a0",
+        "label": "Never played",
+    }
+
+    result = generate_heatmap(
+        photo_path=str(photo),
+        items=[item],
+        detection_size=(32, 24),
+        output_path=str(output),
+        collection_games=[{"name": malicious_name, "plays": 0, "last_played": ""}],
+    )
+
+    html = Path(result).read_text(encoding="utf-8")
+
+    assert "</script><script>" not in html
+    assert "\\u003c/script\\u003e\\u003cscript\\u003e" in html
